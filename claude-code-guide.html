@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code in Action 学習ガイド｜詳細解説</title>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#0B1929;--dark2:#132A43;--dark3:#1A3550;
+  --primary:#065A82;--secondary:#1C7293;
+  --accent:#02C39A;--accent-dark:#019875;
+  --light:#EFF6FA;--light2:#E3F0F7;--light3:#D1E8F0;
+  --text:#1E293B;--text-mid:#475569;--text-light:#94A3B8;
+  --white:#FFFFFF;
+  --warn:#F59E0B;--warn-light:#FEF3C7;
+  --red:#E11D48;--red-light:#FEE2E2;
+  --green:#059669;--green-light:#D1FAE5;
+  --purple:#7C3AED;--purple-light:#EDE9FE;
+  --orange:#EA580C;--orange-light:#FFF7ED;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 4px 24px rgba(11,25,41,.10);
+  --shadow-sm:0 2px 8px rgba(11,25,41,.08);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;color:var(--text);background:var(--white);line-height:1.75;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:var(--primary);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent)}
+
+/* ===== UTILITY ===== */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+.accent{color:var(--accent)}
+.tag{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:99px;letter-spacing:.04em}
+.ic{display:inline-flex;align-items:center;justify-content:center;width:1.1em;height:1.1em;vertical-align:-0.15em;flex-shrink:0}
+.ic svg{width:100%;height:100%;stroke-width:2}
+.ic-lg{width:1.6em;height:1.6em}
+.ic-xl{width:2.2em;height:2.2em;vertical-align:-0.3em}
+.card-icon .ic{width:1.4em;height:1.4em}
+.pillar .icon .ic{width:2.2em;height:2.2em}
+
+/* ===== HERO ===== */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,#0A3D5C 40%,var(--primary) 70%,var(--secondary) 100%);color:var(--white);padding:80px 0 60px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:rgba(2,195,154,.12)}
+.hero::after{content:"";position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero h1{font-size:2.6rem;font-weight:800;margin-bottom:12px;position:relative}
+.hero .subtitle{font-size:1.1rem;color:rgba(255,255,255,.8);max-width:640px;position:relative;line-height:1.8}
+.hero-badges{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;position:relative}
+.hero-badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);padding:6px 16px;border-radius:99px;font-size:.82rem;backdrop-filter:blur(4px)}
+
+/* ===== NAV (sticky TOC) ===== */
+.toc-bar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--light2);transition:box-shadow .3s}
+.toc-bar.scrolled{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.toc-inner{display:flex;align-items:center;gap:6px;padding:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.toc-inner::-webkit-scrollbar{display:none}
+.toc-inner a{flex-shrink:0;font-size:.78rem;font-weight:600;padding:6px 14px;border-radius:99px;color:var(--text-mid);transition:all .25s;white-space:nowrap}
+.toc-inner a:hover,.toc-inner a.active{background:var(--accent);color:var(--white)}
+
+/* ===== SECTIONS ===== */
+section{padding:64px 0}
+section:nth-child(even){background:var(--light)}
+.section-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:6px}
+.section-title{font-size:1.9rem;font-weight:800;color:var(--dark);margin-bottom:8px}
+.section-desc{color:var(--text-mid);max-width:700px;margin-bottom:36px;font-size:1rem;line-height:1.8}
+
+/* ===== CARD GRID ===== */
+.card-grid{display:grid;gap:20px}
+.card-grid.col2{grid-template-columns:repeat(2,1fr)}
+.card-grid.col3{grid-template-columns:repeat(3,1fr)}
+.card-grid.col4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--white);border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow-sm);border:1px solid var(--light2);transition:transform .25s,box-shadow .25s}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card-icon{width:48px;height:48px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:14px;font-weight:700}
+.card h3{font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--dark)}
+.card p{font-size:.88rem;color:var(--text-mid);line-height:1.65}
+
+/* ===== COMPARISON ===== */
+.compare-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch}
+.compare-box{border-radius:var(--radius);padding:28px 24px}
+.compare-box.left{background:var(--light2);border:2px solid var(--light3)}
+.compare-box.right{background:var(--dark);color:var(--white);border:2px solid var(--secondary)}
+.compare-box h3{font-size:1.1rem;font-weight:700;margin-bottom:14px}
+.compare-vs{display:flex;align-items:center;justify-content:center;padding:0 16px;font-size:1.2rem;font-weight:800;color:var(--text-light)}
+.compare-list{list-style:none;font-size:.9rem;line-height:2}
+.compare-list li::before{content:"\2022";margin-right:8px;font-weight:700}
+.compare-box.left .compare-list li::before{color:var(--text-light)}
+.compare-box.right .compare-list li::before{color:var(--accent)}
+
+/* ===== PILLAR ===== */
+.pillar-row{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pillar{border-radius:var(--radius);padding:32px 24px;text-align:center;position:relative;overflow:hidden}
+.pillar .num{position:absolute;top:12px;left:16px;font-size:2rem;font-weight:900;opacity:.15}
+.pillar .icon{font-size:2.4rem;margin-bottom:12px}
+.pillar h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
+.pillar p{font-size:.88rem;line-height:1.65}
+.pillar.c1{background:linear-gradient(135deg,#04405E,#065A82);color:var(--white)}
+.pillar.c2{background:linear-gradient(135deg,#145A75,#1C7293);color:var(--white)}
+.pillar.c3{background:linear-gradient(135deg,#017A5E,#02B08C);color:var(--white)}
+
+/* ===== STEPS / FLOW ===== */
+.step-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
+.step-flow.col3{grid-template-columns:repeat(3,1fr)}
+.step-flow.col5{grid-template-columns:repeat(5,1fr)}
+.step-item{position:relative;text-align:center;padding:24px 16px 20px;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--white);font-weight:800;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.step-item h4{margin-top:8px;font-size:.95rem;font-weight:700;margin-bottom:6px}
+.step-item p{font-size:.82rem;color:var(--text-mid)}
+
+/* ===== CODE BLOCK ===== */
+.code-block{background:var(--dark);color:var(--accent);border-radius:var(--radius);padding:24px 28px;font-family:"SF Mono","Fira Code","Consolas",monospace;font-size:.85rem;line-height:1.9;overflow-x:auto;margin-bottom:20px;white-space:pre;position:relative}
+.code-block .code-label{position:absolute;top:8px;right:12px;font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);font-family:inherit;text-transform:uppercase;letter-spacing:.08em}
+.code-block .comment{color:rgba(255,255,255,.35)}
+.code-block .keyword{color:#7DD3FC}
+.code-block .string{color:#FDE68A}
+
+/* ===== CONTEXT LAYERS ===== */
+.ctx-layers{display:flex;flex-direction:column;align-items:center;gap:0;margin:20px 0}
+.ctx-layer{border-radius:var(--radius);padding:20px 28px;text-align:center;border:2px solid;position:relative}
+.ctx-layer:nth-child(1){width:100%;max-width:700px;background:rgba(6,90,130,.06);border-color:var(--primary)}
+.ctx-layer:nth-child(2){width:85%;max-width:595px;background:rgba(28,114,147,.08);border-color:var(--secondary);margin-top:-8px}
+.ctx-layer:nth-child(3){width:70%;max-width:490px;background:rgba(2,195,154,.08);border-color:var(--accent);margin-top:-8px}
+.ctx-layer h4{font-size:.95rem;font-weight:700;margin-bottom:4px}
+.ctx-layer p{font-size:.82rem;color:var(--text-mid)}
+
+/* ===== HOOK DIAGRAM ===== */
+.hook-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin:24px 0 32px}
+.hook-box{padding:16px 22px;border-radius:var(--radius-sm);font-weight:700;font-size:.9rem;text-align:center;min-width:140px}
+.hook-box.pre{background:var(--warn-light);color:#92400E;border:2px solid var(--warn)}
+.hook-box.tool{background:var(--primary);color:var(--white)}
+.hook-box.post{background:var(--green-light);color:var(--green);border:2px solid var(--green)}
+.hook-arrow{font-size:1.4rem;font-weight:800;color:var(--text-light);padding:0 10px}
+
+/* ===== EXIT CODE TABLE ===== */
+.exit-table{width:100%;border-collapse:collapse;margin:20px 0;border-radius:var(--radius);overflow:hidden}
+.exit-table th{background:var(--dark);color:var(--white);padding:12px 16px;font-size:.85rem;text-align:left}
+.exit-table td{padding:12px 16px;font-size:.88rem;border-bottom:1px solid var(--light2)}
+.exit-table tr:nth-child(even) td{background:var(--light)}
+.exit-table code{background:var(--dark);color:var(--accent);padding:2px 8px;border-radius:4px;font-size:.82rem;font-family:"SF Mono","Fira Code","Consolas",monospace}
+
+/* ===== DEMO CARDS ===== */
+.demo-card{background:var(--white);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow-sm);border:1px solid var(--light2);margin-bottom:20px}
+.demo-card h3{font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:8px}
+.demo-card .demo-tag{display:inline-block;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:99px;margin-bottom:12px}
+.demo-card p{font-size:.88rem;color:var(--text-mid);line-height:1.65;margin-bottom:8px}
+.demo-card .result{display:inline-block;background:var(--accent);color:var(--white);font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:99px;margin-top:4px}
+
+/* ===== MODE TOGGLE ===== */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.mode-card{border-radius:var(--radius);padding:28px 24px;position:relative;overflow:hidden}
+.mode-card.plan{background:linear-gradient(135deg,#04405E,#065A82);color:var(--white)}
+.mode-card.think{background:linear-gradient(135deg,#4C1D95,#7C3AED);color:var(--white)}
+.mode-card h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
+.mode-card p{font-size:.88rem;line-height:1.65;opacity:.9}
+.mode-card .mode-trigger{display:inline-block;background:rgba(255,255,255,.2);padding:4px 14px;border-radius:99px;font-size:.78rem;font-weight:700;margin-top:12px;backdrop-filter:blur(4px)}
+
+/* ===== SAFETY / TROUBLESHOOT ===== */
+.info-stack{display:flex;flex-direction:column;gap:12px;max-width:700px;margin:0 auto}
+.info-row{display:flex;align-items:flex-start;gap:16px;padding:18px 22px;border-radius:var(--radius-sm);background:var(--white);box-shadow:var(--shadow-sm)}
+.info-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0}
+.info-row h4{font-size:.95rem;font-weight:700;margin-bottom:2px}
+.info-row p{font-size:.82rem;color:var(--text-mid)}
+
+/* ===== PROMPT BOX ===== */
+.prompt-ex{border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.prompt-ex.good{background:var(--green-light);border-left:4px solid var(--green)}
+.prompt-ex.bad{background:var(--red-light);border-left:4px solid var(--red)}
+.prompt-ex .label{font-size:.75rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.prompt-ex.good .label{color:var(--green)}
+.prompt-ex.bad .label{color:var(--red)}
+.prompt-ex p{font-size:.9rem;color:var(--text);line-height:1.6}
+
+/* ===== SDK LAYERS ===== */
+.sdk-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.sdk-card{border-radius:var(--radius);padding:24px;text-align:center;border:2px solid var(--light3);background:var(--white)}
+.sdk-card h4{font-size:1rem;font-weight:700;margin:12px 0 6px}
+.sdk-card p{font-size:.82rem;color:var(--text-mid)}
+.sdk-card .sdk-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:1.6rem}
+
+/* ===== SUMMARY CARDS ===== */
+.summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.summary-item{display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-radius:var(--radius-sm);background:var(--white);box-shadow:var(--shadow-sm)}
+.summary-item .ic{color:var(--accent);flex-shrink:0;margin-top:2px}
+.summary-item p{font-size:.88rem;color:var(--text-mid)}
+
+/* ===== FOOTER ===== */
+.site-footer{background:var(--dark);color:rgba(255,255,255,.6);text-align:center;padding:40px 24px;font-size:.85rem}
+.site-footer a{color:var(--accent)}
+.site-footer .logo-f{font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:8px}
+
+/* ===== BACK TO TOP ===== */
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--white);border:none;font-size:1.2rem;cursor:pointer;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;display:flex;align-items:center;justify-content:center}
+.btt.show{opacity:1;pointer-events:auto}
+.btt:hover{transform:scale(1.1)}
+
+/* ===== FADE IN ===== */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .5s ease-out,transform .5s ease-out}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.no-animate .fade-up{opacity:1;transform:none;transition:none}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .card-grid.col3,.card-grid.col4{grid-template-columns:repeat(2,1fr)}
+  .pillar-row{grid-template-columns:1fr}
+  .step-flow,.step-flow.col5{grid-template-columns:repeat(2,1fr)}
+  .compare-wrap{grid-template-columns:1fr;gap:12px}
+  .compare-vs{padding:4px 0;transform:rotate(90deg)}
+  .mode-grid{grid-template-columns:1fr}
+  .sdk-row{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:1fr}
+  .hook-flow{flex-direction:column;gap:8px}
+  .hook-arrow{transform:rotate(90deg);padding:4px 0}
+  .section-title{font-size:1.5rem}
+  .hero h1{font-size:2rem}
+}
+@media(max-width:600px){
+  .card-grid.col2,.card-grid.col3,.card-grid.col4{grid-template-columns:1fr}
+  .step-flow,.step-flow.col3,.step-flow.col5{grid-template-columns:1fr}
+  .hero{padding:56px 0 40px}
+  .hero h1{font-size:1.6rem}
+  section{padding:44px 0}
+  .container{padding:0 16px}
+  .ctx-layer:nth-child(1),.ctx-layer:nth-child(2),.ctx-layer:nth-child(3){width:100%;max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero" id="top">
+<div class="container">
+  <h1 class="fade-up">Claude Code <span class="accent">in Action</span> 学習ガイド</h1>
+  <p class="subtitle fade-up">Anthropic Academy 公式コース（全21レッスン・4モジュール）を元に、<br>Claude Codeの全機能を初心者にも分かりやすくまとめた詳細解説ページです。</p>
+  <div class="hero-badges fade-up">
+    <span><i data-lucide="book-open" class="ic"></i> 全21レッスン</span>
+    <span><i data-lucide="layers" class="ic"></i> 4モジュール</span>
+    <span><i data-lucide="graduation-cap" class="ic"></i> Anthropic Academy 公式</span>
+    <span><i data-lucide="badge-check" class="ic"></i> 無料受講</span>
+  </div>
+</div>
+</header>
+
+<!-- ============================== TOC BAR ============================== -->
+<nav class="toc-bar" id="tocBar">
+<div class="container">
+  <div class="toc-inner">
+    <a href="#what">基本概念</a>
+    <a href="#tooluse">ツール使用</a>
+    <a href="#demo">デモ</a>
+    <a href="#context">コンテキスト</a>
+    <a href="#changes">変更管理</a>
+    <a href="#control">制御テク</a>
+    <a href="#commands">カスタムコマンド</a>
+    <a href="#mcp">MCPサーバー</a>
+    <a href="#github">GitHub連携</a>
+    <a href="#hooks">Hooks基礎</a>
+    <a href="#hookimpl">Hooks実装</a>
+    <a href="#hookuse">実用Hooks</a>
+    <a href="#sdk">SDK</a>
+    <a href="#summary">まとめ</a>
+  </div>
+</div>
+</nav>
+
+<!-- ============================== 1. WHAT IS A CODING ASSISTANT ============================== -->
+<section id="what">
+<div class="container">
+  <p class="section-label fade-up">Module 1 - Lesson 1</p>
+  <h2 class="section-title fade-up"><i data-lucide="terminal" class="ic"></i> コーディングアシスタントとは？</h2>
+  <p class="section-desc fade-up">コーディングアシスタントとは、<strong>言語モデルを使ってコードを書いたり開発タスクを実行するツール</strong>です。Claude Codeはその中でも、ツール使用能力に優れたAIアシスタントです。</p>
+
+  <div class="step-flow fade-up">
+    <div class="step-item">
+      <h4>タスク受領</h4>
+      <p>バグ修正やエラーメッセージなど、開発タスクを受け取ります</p>
+    </div>
+    <div class="step-item">
+      <h4>コンテキスト収集</h4>
+      <p>ファイルを読み、コードベースの構造を理解します</p>
+    </div>
+    <div class="step-item">
+      <h4>計画策定</h4>
+      <p>問題解決のための実行計画を立てます</p>
+    </div>
+    <div class="step-item">
+      <h4>アクション実行</h4>
+      <p>ファイル更新、テスト実行などを行います</p>
+    </div>
+  </div>
+
+  <div style="margin-top:36px">
+    <h3 class="fade-up" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin-bottom:16px"><i data-lucide="info" class="ic"></i> 重要な前提知識</h3>
+    <div class="card-grid col2 fade-up">
+      <div class="card">
+        <div class="card-icon" style="background:var(--warn-light);color:#92400E"><i data-lucide="alert-triangle" class="ic ic-lg"></i></div>
+        <h3>言語モデルの制限</h3>
+        <p>言語モデル自体はテキストの入出力のみ可能です。ファイルの読み書きやコマンド実行は直接できません。そこで<strong>「ツール使用」</strong>という仕組みが必要になります。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="sparkles" class="ic ic-lg"></i></div>
+        <h3>Claudeモデルの優位性</h3>
+        <p>Claudeは他の言語モデルと比較して<strong>ツール使用能力が高い</strong>のが特徴です。ツールの機能理解や複合的なタスク実行に優れ、拡張性も高い設計です。</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 2. TOOL USE SYSTEM ============================== -->
+<section id="tooluse">
+<div class="container">
+  <p class="section-label fade-up">Module 1 - Lesson 1</p>
+  <h2 class="section-title fade-up"><i data-lucide="wrench" class="ic"></i> ツール使用の仕組み</h2>
+  <p class="section-desc fade-up">言語モデルがファイル操作やコマンド実行を行うための核心的な仕組みが<strong>「ツール使用システム」</strong>です。全てのコーディングアシスタントがこの仕組みを基盤としています。</p>
+
+  <div class="step-flow col5 fade-up">
+    <div class="step-item">
+      <h4>リクエスト</h4>
+      <p>ユーザーの依頼にアシスタントが指示を追加</p>
+    </div>
+    <div class="step-item">
+      <h4>ツール呼び出し</h4>
+      <p>モデルが必要なアクションをフォーマットで応答</p>
+    </div>
+    <div class="step-item">
+      <h4>実行</h4>
+      <p>アシスタントが実際のアクションを実行</p>
+    </div>
+    <div class="step-item">
+      <h4>結果返送</h4>
+      <p>実行結果をモデルに送り返す</p>
+    </div>
+    <div class="step-item">
+      <h4>最終応答</h4>
+      <p>モデルが結果を解釈して応答を生成</p>
+    </div>
+  </div>
+
+  <div style="margin-top:32px" class="fade-up">
+    <div class="code-block"><span class="code-label">ツール使用の流れ</span>
+<span class="comment">// 1. ユーザー：「main.jsのバグを修正して」</span>
+<span class="comment">// 2. Claude：read_file("main.js") を呼び出し</span>
+<span class="comment">// 3. アシスタント：ファイルの内容を読み取って返す</span>
+<span class="comment">// 4. Claude：修正内容を決定し write_file() を呼び出し</span>
+<span class="comment">// 5. アシスタント：ファイルを更新 → 完了を報告</span></div>
+  </div>
+
+  <div class="card-grid col3 fade-up" style="margin-top:24px">
+    <div class="card">
+      <div class="card-icon" style="background:var(--light2);color:var(--primary)"><i data-lucide="file-search" class="ic ic-lg"></i></div>
+      <h3>ファイル読み書き</h3>
+      <p>プロジェクト内のファイルを直接読み取り、編集・作成できます。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple)"><i data-lucide="square-terminal" class="ic ic-lg"></i></div>
+      <h3>コマンド実行</h3>
+      <p>シェルコマンドを実行し、ビルド・テスト・デプロイなどを行います。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="search" class="ic ic-lg"></i></div>
+      <h3>コード検索</h3>
+      <p>外部サーバーに送信せず、ローカルで直接コード検索。セキュリティも安全です。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 3. DEMO ============================== -->
+<section id="demo">
+<div class="container">
+  <p class="section-label fade-up">Module 1 - Lesson 2</p>
+  <h2 class="section-title fade-up"><i data-lucide="play-circle" class="ic"></i> Claude Codeの実践デモ</h2>
+  <p class="section-desc fade-up">Claude Codeが実際にどのような開発タスクをこなせるか、4つの代表的なデモシナリオを紹介します。</p>
+
+  <div class="card-grid col2 fade-up">
+    <div class="demo-card">
+      <span class="demo-tag" style="background:var(--green-light);color:var(--green)">パフォーマンス最適化</span>
+      <h3><i data-lucide="gauge" class="ic"></i> Chalkライブラリの高速化</h3>
+      <p>週4.29億ダウンロードのJSパッケージ「Chalk」を分析。ベンチマーク実行、プロファイリング、ボトルネック特定、修正を自動実行。</p>
+      <span class="result"><i data-lucide="trending-up" class="ic"></i> 3.9倍のスループット改善</span>
+    </div>
+    <div class="demo-card">
+      <span class="demo-tag" style="background:var(--purple-light);color:var(--purple)">データ分析</span>
+      <h3><i data-lucide="bar-chart-3" class="ic"></i> 動画配信プラットフォームの解約分析</h3>
+      <p>CSVデータをJupyter Notebookで分析。コード実行、結果確認、次の分析を繰り返し、深いインサイトを導出しました。</p>
+      <span class="result"><i data-lucide="lightbulb" class="ic"></i> 反復的なデータ探索</span>
+    </div>
+    <div class="demo-card">
+      <span class="demo-tag" style="background:var(--orange-light);color:var(--orange)">ブラウザ自動化</span>
+      <h3><i data-lucide="globe" class="ic"></i> UIスタイリングの自動改善</h3>
+      <p>Playwright MCPサーバーでブラウザを操作。スクリーンショット撮影、UI解析、スタイリング修正を自動で繰り返しました。</p>
+      <span class="result"><i data-lucide="palette" class="ic"></i> MCPによるツール拡張</span>
+    </div>
+    <div class="demo-card">
+      <span class="demo-tag" style="background:var(--red-light);color:var(--red)">セキュリティレビュー</span>
+      <h3><i data-lucide="shield-check" class="ic"></i> インフラのPII漏洩検出</h3>
+      <p>Terraform定義のAWS環境で、Lambda出力にユーザーメールが含まれるPRを自動レビュー。外部共有S3バケットへの個人情報露出リスクを検出しました。</p>
+      <span class="result"><i data-lucide="alert-triangle" class="ic"></i> PII漏洩リスクの自動検出</span>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px;padding:20px 24px;background:var(--dark);border-radius:var(--radius);color:var(--white)">
+    <p style="font-size:.95rem;font-weight:600;margin-bottom:4px"><i data-lucide="key" class="ic" style="color:var(--accent)"></i> 核心原則</p>
+    <p style="font-size:.88rem;opacity:.8">Claude Code = 固定機能ではなく、<strong>ツール拡張によってチームのニーズに合わせて成長する柔軟なアシスタント</strong>です。</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 4. ADDING CONTEXT ============================== -->
+<section id="context">
+<div class="container">
+  <p class="section-label fade-up">Module 2 - Lesson 1</p>
+  <h2 class="section-title fade-up"><i data-lucide="brain" class="ic"></i> コンテキスト管理</h2>
+  <p class="section-desc fade-up">コンテキスト（文脈情報）の管理はClaude Codeの効果を左右する最も重要な要素です。<strong>多すぎる情報はパフォーマンスを低下させ、少なすぎると正確な作業ができません。</strong></p>
+
+  <div class="pillar-row fade-up">
+    <div class="pillar c1">
+      <span class="num">1</span>
+      <div class="icon"><i data-lucide="terminal" class="ic ic-xl"></i></div>
+      <h3>/init コマンド</h3>
+      <p>コードベース全体を分析し、プロジェクト構造・アーキテクチャ・重要ファイルをまとめた<strong>Claude.md</strong>ファイルを自動生成します。</p>
+    </div>
+    <div class="pillar c2">
+      <span class="num">2</span>
+      <div class="icon"><i data-lucide="hash" class="ic ic-xl"></i></div>
+      <h3># メモリーモード</h3>
+      <p>「#」キーを押すとClaude.mdファイルを自然言語で編集できるモードに入ります。チームの規約やよくある指示を記録しましょう。</p>
+    </div>
+    <div class="pillar c3">
+      <span class="num">3</span>
+      <div class="icon"><i data-lucide="at-sign" class="ic ic-xl"></i></div>
+      <h3>@ ファイル参照</h3>
+      <p>「@ファイル名」で特定ファイルを直接参照。Claudeに検索させるより正確で効率的にコンテキストを提供できます。</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:36px 0 16px"><i data-lucide="layers" class="ic"></i> Claude.mdの3つのレベル</h3>
+  <div class="ctx-layers fade-up">
+    <div class="ctx-layer">
+      <h4><i data-lucide="globe" class="ic"></i> Machine レベル</h4>
+      <p>全プロジェクト共通のグローバル設定。個人の作業スタイルを定義</p>
+    </div>
+    <div class="ctx-layer">
+      <h4><i data-lucide="folder" class="ic"></i> Project レベル（共有）</h4>
+      <p>チームで共有。ソースコントロールにコミットして全員が同じ指示を利用</p>
+    </div>
+    <div class="ctx-layer">
+      <h4><i data-lucide="user" class="ic"></i> Local レベル（個人）</h4>
+      <p>個人用の設定。コミットされず自分だけの指示やカスタマイズを保持</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> ベストプラクティス</p>
+      <p>データベーススキーマなど頻繁に参照するファイルは、Claude.mdに記載しておくと毎回のリクエストに自動的に含まれます。「必要な情報を適切な量だけ」がClaude Codeの鉄則です。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 5. MAKING CHANGES ============================== -->
+<section id="changes">
+<div class="container">
+  <p class="section-label fade-up">Module 2 - Lesson 2</p>
+  <h2 class="section-title fade-up"><i data-lucide="pen-tool" class="ic"></i> コード変更の管理</h2>
+  <p class="section-desc fade-up">Claude Codeを使った効率的なコード変更ワークフローと、品質を高めるための2つの特別モードを解説します。</p>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:16px"><i data-lucide="camera" class="ic"></i> スクリーンショット連携</h3>
+  <div class="card fade-up" style="margin-bottom:28px">
+    <p style="font-size:.9rem;color:var(--text-mid);line-height:1.7"><strong>Control + V</strong>（macOSではCommand+Vではなく）でスクリーンショットを貼り付けると、Claudeが画面の内容を理解し、UI修正や改善に活用します。問題箇所を視覚的に伝える最速の方法です。</p>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:16px"><i data-lucide="settings-2" class="ic"></i> パフォーマンスブーストモード</h3>
+  <div class="mode-grid fade-up">
+    <div class="mode-card plan">
+      <h3><i data-lucide="map" class="ic"></i> Plan モード</h3>
+      <p><strong>広さを担当</strong> - より多くのファイルを調査し、詳細な実装計画を作成してから実行します。複数ファイルにまたがるタスクに最適。</p>
+      <span class="mode-trigger"><i data-lucide="keyboard" class="ic"></i> Shift + Tab を2回</span>
+    </div>
+    <div class="mode-card think">
+      <h3><i data-lucide="brain" class="ic"></i> Thinking モード</h3>
+      <p><strong>深さを担当</strong> - 拡張推論の予算を使い、複雑なロジックやデバッグに集中的に取り組みます。トリッキーなバグ修正に最適。</p>
+      <span class="mode-trigger"><i data-lucide="message-square" class="ic"></i> 「Ultra think」と入力</span>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:24px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> 使い分けガイド</p>
+      <p><strong>Plan</strong> = 多ファイル横断タスク、リファクタリング、新機能追加<br><strong>Think</strong> = 難解なバグ、アルゴリズム設計、複雑なロジック<br><strong>併用</strong> = 大規模かつ複雑なタスク（追加トークンコストに注意）</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:24px;padding:18px 24px;background:var(--dark2);border-radius:var(--radius);color:var(--white)">
+    <p style="font-size:.9rem"><i data-lucide="git-commit-horizontal" class="ic" style="color:var(--accent)"></i> <strong>Git連携</strong>：Claude Codeは変更のステージング・コミットも実行でき、内容を理解した説明的なコミットメッセージを自動生成します。</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 6. CONTROLLING CONTEXT ============================== -->
+<section id="control">
+<div class="container">
+  <p class="section-label fade-up">Module 2 - Lesson 3</p>
+  <h2 class="section-title fade-up"><i data-lucide="sliders-horizontal" class="ic"></i> コンテキスト制御テクニック</h2>
+  <p class="section-desc fade-up">長時間の作業やタスク切り替え時に、会話の品質を維持するための5つのテクニックを紹介します。</p>
+
+  <div class="info-stack fade-up">
+    <div class="info-row">
+      <div class="info-num" style="background:var(--primary);color:var(--white)">Esc</div>
+      <div>
+        <h4>Escape - 中断</h4>
+        <p>Claudeの応答中に1回押すと即座に中断。出力の方向性を修正したいときに使います。</p>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="info-num" style="background:var(--secondary);color:var(--white)">E+#</div>
+      <div>
+        <h4>Escape + メモリー</h4>
+        <p>中断後に#キーでメモリーに記録。同じミスの繰り返しを防止する強力な組み合わせです。</p>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="info-num" style="background:var(--accent);color:var(--dark)">2x</div>
+      <div>
+        <h4>ダブルEscape - 巻き戻し</h4>
+        <p>Escapeを2回押すと過去のメッセージ一覧が表示され、任意のポイントに戻れます。無関係なデバッグのやり取りを会話からスキップできます。</p>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="info-num" style="background:var(--warn);color:var(--dark)"><i data-lucide="minimize-2" class="ic"></i></div>
+      <div>
+        <h4>Compact コマンド</h4>
+        <p>会話全体を要約しつつ、Claudeが学んだ知識を保持。会話が長くなりすぎた時のクリーンアップに最適です。</p>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="info-num" style="background:var(--red);color:var(--white)"><i data-lucide="trash-2" class="ic"></i></div>
+      <div>
+        <h4>Clear コマンド</h4>
+        <p>会話履歴を完全削除してゼロからスタート。まったく異なるタスクに切り替える時に使います。</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 7. CUSTOM COMMANDS ============================== -->
+<section id="commands">
+<div class="container">
+  <p class="section-label fade-up">Module 2 - Lesson 4</p>
+  <h2 class="section-title fade-up"><i data-lucide="terminal" class="ic"></i> カスタムコマンド</h2>
+  <p class="section-desc fade-up">繰り返し行うタスクを自動化するため、独自のスラッシュコマンドを作成できます。Markdownファイルに指示を書くだけで、チーム全体の生産性が向上します。</p>
+
+  <div class="step-flow col3 fade-up">
+    <div class="step-item">
+      <h4>フォルダ作成</h4>
+      <p>プロジェクトの <code>.claude/commands/</code> フォルダにMarkdownファイルを作成</p>
+    </div>
+    <div class="step-item">
+      <h4>指示を記述</h4>
+      <p>ファイル名がコマンド名に。中にClaudeへの指示をMarkdownで記述</p>
+    </div>
+    <div class="step-item">
+      <h4>実行</h4>
+      <p>Claude Codeを再起動し、<code>/コマンド名</code> で実行。引数も渡せます</p>
+    </div>
+  </div>
+
+  <div class="code-block fade-up" style="margin-top:28px"><span class="code-label">例: .claude/commands/audit.md</span>
+<span class="comment"># 依存パッケージの脆弱性監査</span>
+
+以下の手順で依存パッケージを監査してください：
+
+1. package.json を読み取る
+2. 各依存パッケージのバージョンを確認
+3. 既知の脆弱性がないか調査
+4. 結果をマークダウン表で報告
+
+対象ファイル: <span class="keyword">$arguments</span></div>
+
+  <div class="card-grid col3 fade-up" style="margin-top:20px">
+    <div class="card">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="shield" class="ic ic-lg"></i></div>
+      <h3>脆弱性監査</h3>
+      <p>依存パッケージの自動スキャンと脆弱性レポート生成</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple)"><i data-lucide="test-tubes" class="ic ic-lg"></i></div>
+      <h3>テスト生成</h3>
+      <p>指定ファイルに対するユニットテストの自動作成</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--orange-light);color:var(--orange)"><i data-lucide="bug" class="ic ic-lg"></i></div>
+      <h3>バグ修正</h3>
+      <p>エラーメッセージを引数に渡して修正を自動化</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 8. MCP SERVERS ============================== -->
+<section id="mcp">
+<div class="container">
+  <p class="section-label fade-up">Module 2 - Lesson 5</p>
+  <h2 class="section-title fade-up"><i data-lucide="plug" class="ic"></i> MCPサーバーによる機能拡張</h2>
+  <p class="section-desc fade-up">MCP（Model Context Protocol）サーバーは、Claude Codeに<strong>外部ツールとの連携能力</strong>を追加する仕組みです。ローカルまたはリモートで動作し、開発ワークフローを大幅に拡張します。</p>
+
+  <div class="step-flow col3 fade-up">
+    <div class="step-item">
+      <h4>インストール</h4>
+      <p><code>claude mcp add [name] [command]</code> でMCPサーバーを追加</p>
+    </div>
+    <div class="step-item">
+      <h4>権限承認</h4>
+      <p>初回使用時に権限を承認。settings.local.json で自動承認も設定可能</p>
+    </div>
+    <div class="step-item">
+      <h4>活用</h4>
+      <p>追加されたツールを使って複雑な自動化ワークフローを実行</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px">
+    <div class="demo-card">
+      <span class="demo-tag" style="background:var(--purple-light);color:var(--purple)">実践例</span>
+      <h3><i data-lucide="globe" class="ic"></i> Playwright MCPでUI自動改善</h3>
+      <p>Playwright MCPサーバーを使い、Claudeがlocalhostのアプリをブラウザで開いてUIコンポーネントを生成。スタイリング品質を視覚的に分析し、生成プロンプトを自動修正。繰り返すことで大幅にスタイリングが改善されました。</p>
+      <span class="result"><i data-lucide="sparkles" class="ic"></i> 視覚フィードバックによる自動改善</span>
+    </div>
+  </div>
+
+  <div class="code-block fade-up"><span class="code-label">MCPサーバー追加</span>
+<span class="comment"># Playwright MCPサーバーの追加</span>
+<span class="keyword">claude mcp add</span> playwright <span class="string">npx @anthropic/playwright-mcp</span>
+
+<span class="comment"># 自動承認の設定 (settings.local.json)</span>
+{
+  <span class="string">"allowTools"</span>: [<span class="string">"MCP__playwright"</span>]
+}</div>
+</div>
+</section>
+
+<!-- ============================== 9. GITHUB INTEGRATION ============================== -->
+<section id="github">
+<div class="container">
+  <p class="section-label fade-up">Module 2 - Lesson 6</p>
+  <h2 class="section-title fade-up"><i data-lucide="github" class="ic"></i> GitHub連携</h2>
+  <p class="section-desc fade-up">Claude CodeはGitHub Actionsで動作し、PRレビューやIssue対応を自動化します。チーム全体の開発ワークフローを加速させる公式インテグレーションです。</p>
+
+  <div class="step-flow fade-up">
+    <div class="step-item">
+      <h4>インストール</h4>
+      <p><code>/install GitHub app</code> コマンドを実行</p>
+    </div>
+    <div class="step-item">
+      <h4>アプリ設定</h4>
+      <p>GitHubにClaude Codeアプリをインストール&amp;APIキー設定</p>
+    </div>
+    <div class="step-item">
+      <h4>PR生成</h4>
+      <p>2つのGitHub Actionsを自動追加するPRが作成される</p>
+    </div>
+    <div class="step-item">
+      <h4>運用開始</h4>
+      <p>メンション対応＆自動PRレビューが有効に</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:32px 0 16px"><i data-lucide="zap" class="ic"></i> デフォルトの2つのアクション</h3>
+  <div class="card-grid col2 fade-up">
+    <div class="card">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="at-sign" class="ic ic-lg"></i></div>
+      <h3>メンション対応</h3>
+      <p>Issue/PR内で <strong>@Claude</strong> とメンションすると、タスクの割り当てが可能。コード修正、調査、提案などをGitHub上で直接依頼できます。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple)"><i data-lucide="scan-eye" class="ic ic-lg"></i></div>
+      <h3>自動PRレビュー</h3>
+      <p>新しいPRが作成されると自動的にコードレビューを実行。セキュリティリスクやバグの可能性を指摘し、改善提案を行います。</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:28px 0 12px"><i data-lucide="settings" class="ic"></i> カスタマイズ</h3>
+  <div class="card-grid col3 fade-up">
+    <div class="card">
+      <h3><i data-lucide="file-code" class="ic"></i> ワークフロー設定</h3>
+      <p><code>.github/workflows/</code> ディレクトリ内のファイルでActionsをカスタマイズ</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="message-square-text" class="ic"></i> カスタム指示</h3>
+      <p>configファイルでClaudeに直接コンテキストや指示を渡せます</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="plug" class="ic"></i> MCP連携</h3>
+      <p>Actions内でMCPサーバーを使用可能。Playwrightでブラウザテストも自動化</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:24px">
+    <div class="prompt-ex bad">
+      <p class="label"><i data-lucide="circle-x" class="ic"></i> 注意点</p>
+      <p>GitHub Actions内でClaude Codeに使わせるツールの権限は、<strong>すべて明示的にリスト</strong>する必要があります。MCPサーバーのツールも個別に権限指定が必要で、ショートカットはありません。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 10. HOOKS INTRO ============================== -->
+<section id="hooks">
+<div class="container">
+  <p class="section-label fade-up">Module 3 - Lesson 1</p>
+  <h2 class="section-title fade-up"><i data-lucide="anchor" class="ic"></i> Hooksの基本概念</h2>
+  <p class="section-desc fade-up">Hooksとは、Claudeがツールを実行する<strong>前後に自動的に走るカスタムコマンド</strong>です。ツールの動作を監視・制御し、自動フィードバックループを構築できます。</p>
+
+  <div class="hook-flow fade-up">
+    <div class="hook-box pre"><i data-lucide="shield" class="ic"></i> Pre-hook<br><small>実行前チェック</small></div>
+    <div class="hook-arrow"><i data-lucide="arrow-right" class="ic"></i></div>
+    <div class="hook-box tool"><i data-lucide="wrench" class="ic"></i> ツール実行<br><small>read / edit / grep</small></div>
+    <div class="hook-arrow"><i data-lucide="arrow-right" class="ic"></i></div>
+    <div class="hook-box post"><i data-lucide="check-circle" class="ic"></i> Post-hook<br><small>実行後処理</small></div>
+  </div>
+
+  <div class="card-grid col2 fade-up">
+    <div class="card">
+      <div class="card-icon" style="background:var(--warn-light);color:#92400E"><i data-lucide="shield-alert" class="ic ic-lg"></i></div>
+      <h3>Pre-tool use Hook</h3>
+      <p>ツール実行<strong>前</strong>に起動。操作内容を検査し、条件によっては<strong>ブロック（阻止）</strong>できます。エラーメッセージをClaudeに返すことも可能。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="check-circle-2" class="ic ic-lg"></i></div>
+      <h3>Post-tool use Hook</h3>
+      <p>ツール実行<strong>後</strong>に起動。フォローアップ処理を実行し、結果をフィードバックとしてClaudeに返します。ブロック機能はありません。</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:28px 0 16px"><i data-lucide="lightbulb" class="ic"></i> 活用例</h3>
+  <div class="card-grid col4 fade-up">
+    <div class="card" style="padding:18px 16px">
+      <h3 style="font-size:.9rem"><i data-lucide="paintbrush" class="ic"></i> 自動フォーマット</h3>
+      <p style="font-size:.8rem">ファイル作成後にPrettier等を自動実行</p>
+    </div>
+    <div class="card" style="padding:18px 16px">
+      <h3 style="font-size:.9rem"><i data-lucide="test-tubes" class="ic"></i> テスト実行</h3>
+      <p style="font-size:.8rem">編集後にユニットテストを自動実行</p>
+    </div>
+    <div class="card" style="padding:18px 16px">
+      <h3 style="font-size:.9rem"><i data-lucide="ban" class="ic"></i> ファイル保護</h3>
+      <p style="font-size:.8rem">機密ファイルへのアクセスをブロック</p>
+    </div>
+    <div class="card" style="padding:18px 16px">
+      <h3 style="font-size:.9rem"><i data-lucide="check-square" class="ic"></i> 型チェック</h3>
+      <p style="font-size:.8rem">TypeScript編集後に型エラーを自動検出</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 11. HOOKS IMPLEMENTATION ============================== -->
+<section id="hookimpl">
+<div class="container">
+  <p class="section-label fade-up">Module 3 - Lesson 2-4</p>
+  <h2 class="section-title fade-up"><i data-lucide="code" class="ic"></i> Hooksの定義と実装</h2>
+  <p class="section-desc fade-up">Hookの設定ファイル構造と、実際の実装方法を詳しく解説します。<strong>.envファイルの読み取りをブロックする</strong>実例で学びましょう。</p>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:16px"><i data-lucide="file-json" class="ic"></i> 設定ファイル構造</h3>
+  <div class="code-block fade-up"><span class="code-label">settings.local.json</span>
+{
+  <span class="string">"hooks"</span>: {
+    <span class="string">"preToolUse"</span>: [
+      {
+        <span class="string">"matcher"</span>: <span class="string">"read|grep"</span>,
+        <span class="string">"command"</span>: <span class="string">"node ./hooks/read_hook.js"</span>
+      }
+    ],
+    <span class="string">"postToolUse"</span>: [
+      {
+        <span class="string">"matcher"</span>: <span class="string">"edit"</span>,
+        <span class="string">"command"</span>: <span class="string">"node ./hooks/format_hook.js"</span>
+      }
+    ]
+  }
+}</div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:24px 0 16px"><i data-lucide="key" class="ic"></i> 終了コードの意味</h3>
+  <table class="exit-table fade-up">
+    <thead>
+      <tr><th>終了コード</th><th>意味</th><th>動作</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>exit 0</code></td><td>許可</td><td>ツール呼び出しを通常通り実行</td></tr>
+      <tr><td><code>exit 2</code></td><td>ブロック</td><td>Pre-hookのみ。ツール実行を阻止し、stderrのメッセージをClaudeに返す</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:28px 0 16px"><i data-lucide="file-code" class="ic"></i> 実装例：.envファイルの保護</h3>
+  <div class="code-block fade-up"><span class="code-label">hooks/read_hook.js</span>
+<span class="comment">// stdinからツール呼び出しデータをJSON形式で受信</span>
+<span class="keyword">const</span> chunks = [];
+process.stdin.on(<span class="string">'data'</span>, c => chunks.push(c));
+process.stdin.on(<span class="string">'end'</span>, () => {
+  <span class="keyword">const</span> data = JSON.parse(Buffer.concat(chunks));
+
+  <span class="comment">// ファイルパスを取得</span>
+  <span class="keyword">const</span> filePath = data.input?.file_path || data.input?.path || <span class="string">''</span>;
+
+  <span class="comment">// .envファイルへのアクセスをブロック</span>
+  <span class="keyword">if</span> (filePath.includes(<span class="string">'.env'</span>)) {
+    console.error(<span class="string">'Blocked: .env file access is not allowed'</span>);
+    process.exit(2);  <span class="comment">// ブロック</span>
+  }
+
+  process.exit(0);  <span class="comment">// 許可</span>
+});</div>
+
+  <div class="fade-up" style="margin-top:20px">
+    <div class="prompt-ex bad">
+      <p class="label"><i data-lucide="circle-x" class="ic"></i> 注意点</p>
+      <p>Hookの設定を変更した後は、<strong>必ずClaude Codeを再起動</strong>してください。ファイルパスのチェック時は、readツールの<code>file_path</code>とgrepツールの<code>path</code>の両方に対応するフォールバック処理が必要です。</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:28px 0 16px"><i data-lucide="database" class="ic"></i> Hookが受け取るデータ</h3>
+  <div class="code-block fade-up"><span class="code-label">JSON入力</span>
+{
+  <span class="string">"session_id"</span>: <span class="string">"abc-123"</span>,
+  <span class="string">"tool_name"</span>: <span class="string">"read"</span>,
+  <span class="string">"input"</span>: {
+    <span class="string">"file_path"</span>: <span class="string">"/project/.env"</span>
+  }
+}</div>
+</div>
+</section>
+
+<!-- ============================== 12. USEFUL HOOKS ============================== -->
+<section id="hookuse">
+<div class="container">
+  <p class="section-label fade-up">Module 3 - Lesson 5-6</p>
+  <h2 class="section-title fade-up"><i data-lucide="star" class="ic"></i> 実用的なHooksパターン</h2>
+  <p class="section-desc fade-up">Claude Codeの弱点を自動的に補う2つの強力なHooksパターンを紹介します。これらのパターンで<strong>型エラーとコード重複</strong>という頻出問題を解決できます。</p>
+
+  <div class="card-grid col2 fade-up">
+    <div class="demo-card">
+      <span class="demo-tag" style="background:var(--green-light);color:var(--green)">Post-hook</span>
+      <h3><i data-lucide="check-square" class="ic"></i> TypeScript型チェッカーHook</h3>
+      <p><strong>問題</strong>：Claudeが関数シグネチャを変更した際、呼び出し側のコードを更新し忘れて型エラーが発生する。</p>
+      <p><strong>解決策</strong>：TypeScriptファイル編集後に <code>tsc --no-emit</code> を自動実行。型エラーを検出するとフィードバックとしてClaudeに返し、自動修正させます。</p>
+      <span class="result"><i data-lucide="check" class="ic"></i> 型付き言語なら何でも適用可能</span>
+    </div>
+    <div class="demo-card">
+      <span class="demo-tag" style="background:var(--purple-light);color:var(--purple)">Post-hook</span>
+      <h3><i data-lucide="copy" class="ic"></i> コード重複防止Hook</h3>
+      <p><strong>問題</strong>：複雑なタスクでClaudeが既存のクエリ/関数を再利用せず、新たに重複コードを作成してしまう。</p>
+      <p><strong>解決策</strong>：監視対象ディレクトリ（例：queries/）の変更を検出し、別のClaudeインスタンスをSDK経由で起動。既存コードとの重複を分析し、発見した場合はexit 2でブロック。</p>
+      <span class="result"><i data-lucide="alert-triangle" class="ic"></i> 重要ディレクトリに限定推奨</span>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:24px;padding:20px 24px;background:var(--dark);border-radius:var(--radius);color:var(--white)">
+    <p style="font-size:.95rem;font-weight:600;margin-bottom:8px"><i data-lucide="repeat" class="ic" style="color:var(--accent)"></i> 共通パターン：自動フィードバックループ</p>
+    <p style="font-size:.88rem;opacity:.8;margin-bottom:4px">両方のHookに共通するのは「<strong>Post-hookで検査 → エラー発見 → Claudeにフィードバック → 自動修正</strong>」というパターンです。</p>
+    <p style="font-size:.82rem;opacity:.6">注意：追加のAPI呼び出しが発生するため、コスト・時間のトレードオフを考慮してください。</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 13. SDK ============================== -->
+<section id="sdk">
+<div class="container">
+  <p class="section-label fade-up">Module 3 - Lesson 7</p>
+  <h2 class="section-title fade-up"><i data-lucide="box" class="ic"></i> Claude Code SDK</h2>
+  <p class="section-desc fade-up">Claude Code SDKは、Claude Codeの機能をプログラムから利用するためのインターフェースです。<strong>CLI・TypeScript・Python</strong>の3つのライブラリが用意されており、既存のパイプラインに知能を組み込めます。</p>
+
+  <div class="sdk-row fade-up">
+    <div class="sdk-card">
+      <div class="sdk-icon" style="background:var(--dark);color:var(--accent)"><i data-lucide="terminal" class="ic ic-xl"></i></div>
+      <h4>CLI</h4>
+      <p>コマンドラインから直接実行。シェルスクリプトやCI/CDパイプラインに最適</p>
+    </div>
+    <div class="sdk-card">
+      <div class="sdk-icon" style="background:var(--primary);color:var(--white)"><i data-lucide="braces" class="ic ic-xl"></i></div>
+      <h4>TypeScript</h4>
+      <p>Node.jsアプリに統合。型安全なAPIでフルコントロール</p>
+    </div>
+    <div class="sdk-card">
+      <div class="sdk-icon" style="background:var(--secondary);color:var(--white)"><i data-lucide="file-code-2" class="ic ic-xl"></i></div>
+      <h4>Python</h4>
+      <p>データ分析パイプラインや自動化スクリプトに組み込み</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:28px 0 16px"><i data-lucide="shield" class="ic"></i> 権限モデル</h3>
+  <div class="compare-wrap fade-up">
+    <div class="compare-box left">
+      <h3><i data-lucide="lock" class="ic"></i> デフォルト（読み取り専用）</h3>
+      <ul class="compare-list">
+        <li>ファイルの読み取り</li>
+        <li>ディレクトリの参照</li>
+        <li>Grep（コード検索）</li>
+        <li>書き込み・編集は不可</li>
+      </ul>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-box right">
+      <h3><i data-lucide="unlock" class="ic"></i> 書き込み許可設定後</h3>
+      <ul class="compare-list">
+        <li>ファイルの編集・作成</li>
+        <li>コマンド実行</li>
+        <li>全ツールの使用が可能</li>
+        <li>options.allowTools で指定</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="code-block fade-up" style="margin-top:24px"><span class="code-label">TypeScript SDK 例</span>
+<span class="keyword">import</span> { query } <span class="keyword">from</span> <span class="string">'@anthropic/claude-code'</span>;
+
+<span class="keyword">const</span> result = <span class="keyword">await</span> query({
+  prompt: <span class="string">"このファイルのバグを修正して"</span>,
+  options: {
+    allowTools: [<span class="string">"edit"</span>, <span class="string">"write"</span>]  <span class="comment">// 書き込み権限を追加</span>
+  }
+});</div>
+
+  <div class="fade-up" style="margin-top:20px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> 最適な用途</p>
+      <p>SDKは<strong>ヘルパーコマンド、自動化スクリプト、Hooks内でのサブプロセス</strong>など、既存プロジェクト内のパイプラインに組み込んで使うのが最も効果的です。スタンドアロンでの使用より、既存ワークフローへの統合に向いています。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 14. SUMMARY ============================== -->
+<section id="summary">
+<div class="container">
+  <p class="section-label fade-up">Module 4</p>
+  <h2 class="section-title fade-up"><i data-lucide="award" class="ic"></i> コースまとめ</h2>
+  <p class="section-desc fade-up">全21レッスンで学んだClaude Codeの知識を振り返りましょう。</p>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:16px"><i data-lucide="check-circle" class="ic" style="color:var(--accent)"></i> 学んだこと一覧</h3>
+  <div class="summary-grid fade-up">
+    <div class="summary-item">
+      <i data-lucide="terminal" class="ic"></i>
+      <p><strong>コーディングアシスタント</strong>：言語モデルがツール使用を通じて開発タスクを実行する仕組み</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="brain" class="ic"></i>
+      <p><strong>コンテキスト管理</strong>：Claude.md、# メモリー、@ ファイル参照による情報の最適化</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="pen-tool" class="ic"></i>
+      <p><strong>変更管理</strong>：Planモード、Thinkingモード、スクリーンショット連携</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="sliders-horizontal" class="ic"></i>
+      <p><strong>コンテキスト制御</strong>：Escape、Compact、Clearによる会話品質の維持</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="terminal" class="ic"></i>
+      <p><strong>カスタムコマンド</strong>：.claude/commands/ で繰り返しタスクを自動化</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="plug" class="ic"></i>
+      <p><strong>MCPサーバー</strong>：外部ツール連携でブラウザ操作や高度な自動化を実現</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="github" class="ic"></i>
+      <p><strong>GitHub連携</strong>：PR自動レビュー、メンション対応、Actions内でのMCP利用</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="anchor" class="ic"></i>
+      <p><strong>Hooks</strong>：ツール実行前後の自動チェック、型検査、重複防止</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="box" class="ic"></i>
+      <p><strong>SDK</strong>：CLI / TypeScript / Pythonで既存パイプラインにClaude Codeを統合</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="shield" class="ic"></i>
+      <p><strong>セキュリティ</strong>：ローカル検索、権限管理、ファイル保護による安全な開発</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:36px 0 16px"><i data-lucide="external-link" class="ic"></i> 参考リンク</h3>
+  <div class="card-grid col3 fade-up">
+    <div class="card" style="text-align:center">
+      <div class="card-icon" style="background:var(--light2);color:var(--primary);margin:0 auto 12px"><i data-lucide="book-open" class="ic ic-lg"></i></div>
+      <h3>Anthropic Academy</h3>
+      <p style="font-size:.82rem"><a href="https://anthropic.skilljar.com/claude-code-in-action" target="_blank">公式コースページ</a></p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green);margin:0 auto 12px"><i data-lucide="globe" class="ic ic-lg"></i></div>
+      <h3>Claude.ai</h3>
+      <p style="font-size:.82rem"><a href="https://claude.ai" target="_blank">Claude を使ってみる</a></p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple);margin:0 auto 12px"><i data-lucide="book" class="ic ic-lg"></i></div>
+      <h3>Anthropic Docs</h3>
+      <p style="font-size:.82rem"><a href="https://docs.anthropic.com" target="_blank">公式ドキュメント</a></p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="site-footer">
+  <div class="logo-f">Claude Code in Action 学習ガイド</div>
+  <p>Anthropic Academy 公式コースの内容を元に作成 | 本ページは学習目的の非公式まとめです</p>
+</footer>
+
+<!-- BACK TO TOP -->
+<button class="btt" id="btt" aria-label="トップへ戻る"><i data-lucide="chevron-up" class="ic"></i></button>
+
+<script>
+// Lucide Icons init
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.lucide) lucide.createIcons();
+});
+
+// Sticky TOC shadow
+const toc = document.getElementById('tocBar');
+if (toc) {
+  window.addEventListener('scroll', () => {
+    toc.classList.toggle('scrolled', window.scrollY > 10);
+  }, {passive:true});
+}
+
+// Active TOC highlight
+const tocLinks = document.querySelectorAll('.toc-inner a');
+const sections = document.querySelectorAll('section[id]');
+function updateTOC() {
+  let cur = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) cur = s.id;
+  });
+  tocLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+}
+window.addEventListener('scroll', updateTOC, {passive:true});
+
+// Fade-in animation
+const obs = new IntersectionObserver((entries, o) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      o.unobserve(e.target);
+    }
+  });
+}, {threshold:0.05, rootMargin:'0px 0px -20px 0px'});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+// Fallback for elements that might not trigger
+setTimeout(() => {
+  document.querySelectorAll('.fade-up:not(.visible)').forEach(el => el.classList.add('visible'));
+}, 3000);
+
+// Back to top button
+const btt = document.getElementById('btt');
+if (btt) {
+  window.addEventListener('scroll', () => {
+    btt.classList.toggle('show', window.scrollY > 500);
+  }, {passive:true});
+  btt.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+}
+</script>
+</body>
+</html>

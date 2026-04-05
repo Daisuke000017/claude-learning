@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude 学習ガイド｜Anthropic Academy 日本語解説</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#0B1929;--dark2:#132A43;--dark3:#1A3550;
+  --primary:#065A82;--secondary:#1C7293;
+  --accent:#02C39A;--accent-dark:#019875;
+  --light:#EFF6FA;--light2:#E3F0F7;--light3:#D1E8F0;
+  --text:#1E293B;--text-mid:#475569;--text-light:#94A3B8;
+  --white:#FFFFFF;
+  --radius:16px;--radius-sm:10px;
+  --shadow:0 4px 24px rgba(11,25,41,.10);
+  --shadow-sm:0 2px 8px rgba(11,25,41,.08);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;color:var(--text);background:var(--white);line-height:1.75;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+
+a{color:var(--primary);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent)}
+
+/* ===== HERO ===== */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,var(--primary) 50%,var(--secondary) 100%);color:var(--white);padding:80px 0 60px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:"";position:absolute;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:rgba(2,195,154,.12)}
+.hero::after{content:"";position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero .container{position:relative;z-index:1}
+.hero h1{font-size:2.6rem;font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
+.hero .subtitle{font-size:1.15rem;color:rgba(255,255,255,.8);max-width:640px;margin:0 auto 24px}
+.hero-badges{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero-badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);padding:6px 16px;border-radius:99px;font-size:.82rem;backdrop-filter:blur(4px);display:inline-flex;align-items:center;gap:6px}
+.hero-badges span i{width:14px;height:14px;stroke-width:2}
+
+/* ===== CONTAINER ===== */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* ===== INTRO ===== */
+.intro{padding:56px 0 32px;text-align:center}
+.intro h2{font-size:1.5rem;font-weight:700;margin-bottom:8px;color:var(--dark)}
+.intro p{color:var(--text-mid);max-width:600px;margin:0 auto;font-size:1rem}
+
+/* ===== COURSE CARDS ===== */
+.courses{padding:16px 0 72px}
+.course-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+
+.course-card{background:var(--white);border:1px solid var(--light2);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;position:relative}
+.course-card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+
+.card-header{padding:32px 28px 20px;position:relative}
+.card-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.card-icon i{width:28px;height:28px;stroke-width:1.8}
+.card-icon.blue{background:linear-gradient(135deg,var(--primary),var(--secondary));color:var(--white)}
+.card-icon.green{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:var(--white)}
+.card-icon.purple{background:linear-gradient(135deg,#6D28D9,#7C3AED);color:var(--white)}
+
+.card-number{position:absolute;top:20px;right:24px;font-size:.72rem;font-weight:700;color:var(--text-light);background:var(--light);padding:3px 12px;border-radius:99px;letter-spacing:.06em}
+
+.card-header h3{font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:6px;line-height:1.4}
+.card-header .card-subtitle{font-size:.88rem;color:var(--text-mid);line-height:1.6}
+
+.card-body{padding:0 28px 24px;flex:1}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.card-tags span{font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:99px;letter-spacing:.03em}
+.card-tags .t-blue{background:var(--light2);color:var(--primary)}
+.card-tags .t-green{background:#D1FAE5;color:#059669}
+.card-tags .t-purple{background:#EDE9FE;color:#6D28D9}
+.card-tags .t-amber{background:#FEF3C7;color:#B45309}
+
+.card-meta{display:flex;flex-direction:column;gap:6px;font-size:.82rem;color:var(--text-mid)}
+.card-meta span{display:inline-flex;align-items:center;gap:6px}
+.card-meta i{width:14px;height:14px;stroke-width:2;color:var(--text-light)}
+
+.card-footer{padding:16px 28px;border-top:1px solid var(--light2);background:var(--light)}
+.card-link{display:inline-flex;align-items:center;gap:8px;font-size:.92rem;font-weight:600;color:var(--primary);transition:all .2s}
+.card-link:hover{color:var(--accent);gap:12px}
+.card-link i{width:16px;height:16px;stroke-width:2.5;transition:transform .2s}
+.card-link:hover i{transform:translateX(3px)}
+
+/* ===== LEARNING PATH ===== */
+.path-section{padding:0 0 64px}
+.path-section h2{font-size:1.3rem;font-weight:700;text-align:center;margin-bottom:32px;color:var(--dark)}
+.path-wrap{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+.path-step{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--light);border-radius:var(--radius-sm);border:1px solid var(--light2);position:relative}
+.path-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:var(--white);flex-shrink:0}
+.path-num.n1{background:var(--accent)}
+.path-num.n2{background:var(--primary)}
+.path-num.n3{background:#7C3AED}
+.path-label{font-size:.85rem;font-weight:600;color:var(--dark)}
+.path-arrow{font-size:1.2rem;color:var(--text-light);padding:0 8px;display:flex;align-items:center}
+.path-arrow i{width:20px;height:20px;stroke-width:2}
+
+/* ===== FOOTER ===== */
+.site-footer{margin-top:auto;background:var(--dark);color:rgba(255,255,255,.6);padding:32px 0;text-align:center;font-size:.82rem}
+.site-footer a{color:var(--accent);font-weight:600}
+.footer-links{display:flex;justify-content:center;gap:24px;margin-bottom:12px;flex-wrap:wrap}
+.footer-links a{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.7);font-size:.82rem;transition:color .2s}
+.footer-links a:hover{color:var(--accent)}
+.footer-links a i{width:14px;height:14px;stroke-width:2}
+
+/* ===== FADE-IN ===== */
+.fade-target{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-target.visible{opacity:1;transform:translateY(0)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .hero h1{font-size:2rem}
+  .course-grid{grid-template-columns:1fr 1fr;gap:20px}
+}
+@media(max-width:600px){
+  .hero{padding:56px 0 40px}
+  .hero h1{font-size:1.6rem}
+  .hero .subtitle{font-size:1rem}
+  .course-grid{grid-template-columns:1fr;gap:16px}
+  .card-header{padding:24px 20px 16px}
+  .card-body{padding:0 20px 20px}
+  .card-footer{padding:14px 20px}
+  .path-wrap{flex-direction:column;gap:8px}
+  .path-arrow{transform:rotate(90deg)}
+}
+</style>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="container">
+    <h1>Claude 学習ガイド</h1>
+    <p class="subtitle">Anthropic Academy コースの日本語解説資料。<br>初心者でもステップバイステップで学べる詳細ガイドです。</p>
+    <div class="hero-badges">
+      <span><i data-lucide="book-open"></i>3 コース</span>
+      <span><i data-lucide="languages"></i>日本語解説</span>
+      <span><i data-lucide="laptop"></i>レスポンシブ対応</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main>
+
+  <!-- INTRO -->
+  <section class="intro">
+    <div class="container">
+      <h2>学習コース一覧</h2>
+      <p>Anthropic Academy の公式コースを日本語で詳しく解説。基礎から実践まで段階的に学べます。</p>
+    </div>
+  </section>
+
+  <!-- COURSE CARDS -->
+  <section class="courses">
+    <div class="container">
+      <div class="course-grid">
+
+        <!-- Card 1: AI Fluency -->
+        <div class="course-card fade-target">
+          <div class="card-header">
+            <span class="card-number">COURSE 01</span>
+            <div class="card-icon green">
+              <i data-lucide="brain"></i>
+            </div>
+            <h3>AI Fluency:<br>Framework &amp; Foundations</h3>
+            <p class="card-subtitle">AIリテラシーの基礎と4Dフレームワーク（Delegation・Description・Discernment・Diligence）を学ぶ入門コース</p>
+          </div>
+          <div class="card-body">
+            <div class="card-tags">
+              <span class="t-green">入門</span>
+              <span class="t-amber">フレームワーク</span>
+              <span class="t-blue">プロンプト基礎</span>
+            </div>
+            <div class="card-meta">
+              <span><i data-lucide="layout-list"></i>13 レッスン・12 セクション</span>
+              <span><i data-lucide="target"></i>AI活用の基本的な考え方を習得</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="ai-fluency-guide.html" class="card-link">ガイドを読む <i data-lucide="arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- Card 2: Cowork -->
+        <div class="course-card fade-target">
+          <div class="card-header">
+            <span class="card-number">COURSE 02</span>
+            <div class="card-icon blue">
+              <i data-lucide="message-square"></i>
+            </div>
+            <h3>Claudeとの協働<br>入門ガイド</h3>
+            <p class="card-subtitle">Claudeの基本操作からプロンプトエンジニアリング、Artifacts活用まで実践的に学ぶコース</p>
+          </div>
+          <div class="card-body">
+            <div class="card-tags">
+              <span class="t-blue">基礎〜中級</span>
+              <span class="t-green">プロンプト設計</span>
+              <span class="t-purple">Artifacts</span>
+            </div>
+            <div class="card-meta">
+              <span><i data-lucide="layout-list"></i>27 スライド・14 セクション</span>
+              <span><i data-lucide="target"></i>Claudeを使いこなす実践スキル</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="cowork-guide.html" class="card-link">ガイドを読む <i data-lucide="arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- Card 3: Claude Code -->
+        <div class="course-card fade-target">
+          <div class="card-header">
+            <span class="card-number">COURSE 03</span>
+            <div class="card-icon purple">
+              <i data-lucide="terminal"></i>
+            </div>
+            <h3>Claude Code<br>in Action</h3>
+            <p class="card-subtitle">ターミナルで動くAIコーディングアシスタント。ツール活用・Hooks・MCP・SDKまで網羅する上級コース</p>
+          </div>
+          <div class="card-body">
+            <div class="card-tags">
+              <span class="t-purple">上級</span>
+              <span class="t-blue">開発者向け</span>
+              <span class="t-amber">自動化</span>
+            </div>
+            <div class="card-meta">
+              <span><i data-lucide="layout-list"></i>21 レッスン・4 モジュール</span>
+              <span><i data-lucide="target"></i>開発ワークフロー自動化を習得</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="claude-code-guide.html" class="card-link">ガイドを読む <i data-lucide="arrow-right"></i></a>
+          </div>
+        </div>
+
+      </div><!-- /course-grid -->
+    </div>
+  </section>
+
+  <!-- LEARNING PATH -->
+  <section class="path-section fade-target">
+    <div class="container">
+      <h2>おすすめ学習順序</h2>
+      <div class="path-wrap">
+        <div class="path-step">
+          <span class="path-num n1">1</span>
+          <span class="path-label">AI Fluency</span>
+        </div>
+        <span class="path-arrow"><i data-lucide="chevron-right"></i></span>
+        <div class="path-step">
+          <span class="path-num n2">2</span>
+          <span class="path-label">Claudeとの協働</span>
+        </div>
+        <span class="path-arrow"><i data-lucide="chevron-right"></i></span>
+        <div class="path-step">
+          <span class="path-num n3">3</span>
+          <span class="path-label">Claude Code</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-links">
+      <a href="https://anthropic.skilljar.com/" target="_blank"><i data-lucide="graduation-cap"></i>Anthropic Academy</a>
+      <a href="https://docs.anthropic.com/" target="_blank"><i data-lucide="file-text"></i>公式ドキュメント</a>
+      <a href="https://github.com/Daisuke000017/claude-learning" target="_blank"><i data-lucide="github"></i>GitHub</a>
+    </div>
+    <p>Anthropic Academy コースの日本語学習ガイド ─ 個人学習用に作成</p>
+  </div>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+lucide.createIcons();
+
+// Fade-in on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.05 });
+document.querySelectorAll('.fade-target').forEach(el => observer.observe(el));
+
+// Fallback: show all after 1.5s
+setTimeout(() => document.querySelectorAll('.fade-target').forEach(el => el.classList.add('visible')), 1500);
+</script>
+</body>
+</html>

@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Fluency 入門ガイド｜Anthropic Academy 詳細解説</title>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#0B1929;--dark2:#132A43;--dark3:#1A3550;
+  --primary:#065A82;--secondary:#1C7293;
+  --accent:#02C39A;--accent-dark:#019875;
+  --light:#EFF6FA;--light2:#E3F0F7;--light3:#D1E8F0;
+  --text:#1E293B;--text-mid:#475569;--text-light:#94A3B8;
+  --white:#FFFFFF;
+  --warn:#F59E0B;--warn-light:#FEF3C7;
+  --red:#E11D48;--red-light:#FEE2E2;
+  --green:#059669;--green-light:#D1FAE5;
+  --purple:#7C3AED;--purple-light:#EDE9FE;
+  --orange:#EA580C;--orange-light:#FFF7ED;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 4px 24px rgba(11,25,41,.10);
+  --shadow-sm:0 2px 8px rgba(11,25,41,.08);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;color:var(--text);background:var(--white);line-height:1.75;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:var(--primary);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent)}
+
+/* ===== UTILITY ===== */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+.accent{color:var(--accent)}
+.tag{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:99px;letter-spacing:.04em}
+.ic{display:inline-flex;align-items:center;justify-content:center;width:1.1em;height:1.1em;vertical-align:-0.15em;flex-shrink:0}
+.ic svg{width:100%;height:100%;stroke-width:2}
+.ic-lg{width:1.6em;height:1.6em}
+.ic-xl{width:2.2em;height:2.2em;vertical-align:-0.3em}
+.card-icon .ic{width:1.4em;height:1.4em}
+.pillar .icon .ic{width:2.2em;height:2.2em}
+
+/* ===== HERO ===== */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,#0A3D5C 40%,var(--primary) 70%,var(--secondary) 100%);color:var(--white);padding:80px 0 60px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:rgba(2,195,154,.12)}
+.hero::after{content:"";position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero h1{font-size:2.6rem;font-weight:800;margin-bottom:12px;position:relative}
+.hero .subtitle{font-size:1.1rem;color:rgba(255,255,255,.8);max-width:640px;position:relative;line-height:1.8}
+.hero-badges{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;position:relative}
+.hero-badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);padding:6px 16px;border-radius:99px;font-size:.82rem;backdrop-filter:blur(4px)}
+
+/* ===== NAV (sticky TOC) ===== */
+.toc-bar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--light2);transition:box-shadow .3s}
+.toc-bar.scrolled{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.toc-inner{display:flex;align-items:center;gap:6px;padding:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.toc-inner::-webkit-scrollbar{display:none}
+.toc-inner a{flex-shrink:0;font-size:.78rem;font-weight:600;padding:6px 14px;border-radius:99px;color:var(--text-mid);transition:all .25s;white-space:nowrap}
+.toc-inner a:hover,.toc-inner a.active{background:var(--accent);color:var(--white)}
+
+/* ===== SECTIONS ===== */
+section{padding:64px 0}
+section:nth-child(even){background:var(--light)}
+.section-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:6px}
+.section-title{font-size:1.9rem;font-weight:800;color:var(--dark);margin-bottom:8px}
+.section-desc{color:var(--text-mid);max-width:700px;margin-bottom:36px;font-size:1rem;line-height:1.8}
+
+/* ===== CARD GRID ===== */
+.card-grid{display:grid;gap:20px}
+.card-grid.col2{grid-template-columns:repeat(2,1fr)}
+.card-grid.col3{grid-template-columns:repeat(3,1fr)}
+.card-grid.col4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--white);border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow-sm);border:1px solid var(--light2);transition:transform .25s,box-shadow .25s}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card-icon{width:48px;height:48px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:14px;font-weight:700}
+.card h3{font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--dark)}
+.card p{font-size:.88rem;color:var(--text-mid);line-height:1.65}
+
+/* ===== COMPARISON ===== */
+.compare-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch}
+.compare-box{border-radius:var(--radius);padding:28px 24px}
+.compare-box.left{background:var(--light2);border:2px solid var(--light3)}
+.compare-box.right{background:var(--dark);color:var(--white);border:2px solid var(--secondary)}
+.compare-box h3{font-size:1.1rem;font-weight:700;margin-bottom:14px}
+.compare-vs{display:flex;align-items:center;justify-content:center;padding:0 16px;font-size:1.2rem;font-weight:800;color:var(--text-light)}
+.compare-list{list-style:none;font-size:.9rem;line-height:2}
+.compare-list li::before{content:"\2022";margin-right:8px;font-weight:700}
+.compare-box.left .compare-list li::before{color:var(--text-light)}
+.compare-box.right .compare-list li::before{color:var(--accent)}
+
+/* ===== PILLAR ===== */
+.pillar-row{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pillar-row.col4{grid-template-columns:repeat(4,1fr)}
+.pillar{border-radius:var(--radius);padding:32px 24px;text-align:center;position:relative;overflow:hidden}
+.pillar .num{position:absolute;top:12px;left:16px;font-size:2rem;font-weight:900;opacity:.15}
+.pillar .icon{font-size:2.4rem;margin-bottom:12px}
+.pillar h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
+.pillar p{font-size:.88rem;line-height:1.65}
+.pillar.c1{background:linear-gradient(135deg,#04405E,#065A82);color:var(--white)}
+.pillar.c2{background:linear-gradient(135deg,#145A75,#1C7293);color:var(--white)}
+.pillar.c3{background:linear-gradient(135deg,#017A5E,#02B08C);color:var(--white)}
+.pillar.c4{background:linear-gradient(135deg,#4C1D95,#7C3AED);color:var(--white)}
+
+/* ===== STEPS / FLOW ===== */
+.step-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
+.step-flow.col3{grid-template-columns:repeat(3,1fr)}
+.step-flow.col5{grid-template-columns:repeat(5,1fr)}
+.step-flow.col6{grid-template-columns:repeat(3,1fr)}
+.step-item{position:relative;text-align:center;padding:24px 16px 20px;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--white);font-weight:800;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.step-item h4{margin-top:8px;font-size:.95rem;font-weight:700;margin-bottom:6px}
+.step-item p{font-size:.82rem;color:var(--text-mid)}
+
+/* ===== CODE BLOCK ===== */
+.code-block{background:var(--dark);color:var(--accent);border-radius:var(--radius);padding:24px 28px;font-family:"SF Mono","Fira Code","Consolas",monospace;font-size:.85rem;line-height:1.9;overflow-x:auto;margin-bottom:20px;white-space:pre;position:relative}
+.code-block .code-label{position:absolute;top:8px;right:12px;font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);font-family:inherit;text-transform:uppercase;letter-spacing:.08em}
+.code-block .comment{color:rgba(255,255,255,.35)}
+.code-block .keyword{color:#7DD3FC}
+.code-block .string{color:#FDE68A}
+
+/* ===== CONTEXT LAYERS ===== */
+.ctx-layers{display:flex;flex-direction:column;align-items:center;gap:0;margin:20px 0}
+.ctx-layer{border-radius:var(--radius);padding:20px 28px;text-align:center;border:2px solid;position:relative}
+.ctx-layer:nth-child(1){width:100%;max-width:700px;background:rgba(6,90,130,.06);border-color:var(--primary)}
+.ctx-layer:nth-child(2){width:85%;max-width:595px;background:rgba(28,114,147,.08);border-color:var(--secondary);margin-top:-8px}
+.ctx-layer:nth-child(3){width:70%;max-width:490px;background:rgba(2,195,154,.08);border-color:var(--accent);margin-top:-8px}
+.ctx-layer h4{font-size:.95rem;font-weight:700;margin-bottom:4px}
+.ctx-layer p{font-size:.82rem;color:var(--text-mid)}
+
+/* ===== HOOK DIAGRAM ===== */
+.hook-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin:24px 0 32px}
+.hook-box{padding:16px 22px;border-radius:var(--radius-sm);font-weight:700;font-size:.9rem;text-align:center;min-width:140px}
+.hook-box.pre{background:var(--warn-light);color:#92400E;border:2px solid var(--warn)}
+.hook-box.tool{background:var(--primary);color:var(--white)}
+.hook-box.post{background:var(--green-light);color:var(--green);border:2px solid var(--green)}
+.hook-arrow{font-size:1.4rem;font-weight:800;color:var(--text-light);padding:0 10px}
+
+/* ===== INFO STACK ===== */
+.info-stack{display:flex;flex-direction:column;gap:12px;max-width:700px;margin:0 auto}
+.info-row{display:flex;align-items:flex-start;gap:16px;padding:18px 22px;border-radius:var(--radius-sm);background:var(--white);box-shadow:var(--shadow-sm)}
+.info-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0}
+.info-row h4{font-size:.95rem;font-weight:700;margin-bottom:2px}
+.info-row p{font-size:.82rem;color:var(--text-mid)}
+
+/* ===== PROMPT BOX ===== */
+.prompt-ex{border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.prompt-ex.good{background:var(--green-light);border-left:4px solid var(--green)}
+.prompt-ex.bad{background:var(--red-light);border-left:4px solid var(--red)}
+.prompt-ex .label{font-size:.75rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.prompt-ex.good .label{color:var(--green)}
+.prompt-ex.bad .label{color:var(--red)}
+.prompt-ex p{font-size:.9rem;color:var(--text);line-height:1.6}
+
+/* ===== DEMO CARDS ===== */
+.demo-card{background:var(--white);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow-sm);border:1px solid var(--light2);margin-bottom:20px}
+.demo-card h3{font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:8px}
+.demo-card .demo-tag{display:inline-block;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:99px;margin-bottom:12px}
+.demo-card p{font-size:.88rem;color:var(--text-mid);line-height:1.65;margin-bottom:8px}
+.demo-card .result{display:inline-block;background:var(--accent);color:var(--white);font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:99px;margin-top:4px}
+
+/* ===== SUMMARY CARDS ===== */
+.summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.summary-item{display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-radius:var(--radius-sm);background:var(--white);box-shadow:var(--shadow-sm)}
+.summary-item .ic{color:var(--accent);flex-shrink:0;margin-top:2px}
+.summary-item p{font-size:.88rem;color:var(--text-mid)}
+
+/* ===== FOOTER ===== */
+.site-footer{background:var(--dark);color:rgba(255,255,255,.6);text-align:center;padding:40px 24px;font-size:.85rem}
+.site-footer a{color:var(--accent)}
+.site-footer .logo-f{font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:8px}
+
+/* ===== BACK TO TOP ===== */
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--white);border:none;font-size:1.2rem;cursor:pointer;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;display:flex;align-items:center;justify-content:center}
+.btt.show{opacity:1;pointer-events:auto}
+.btt:hover{transform:scale(1.1)}
+
+/* ===== FADE IN ===== */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .5s ease-out,transform .5s ease-out}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.no-animate .fade-up{opacity:1;transform:none;transition:none}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .card-grid.col3,.card-grid.col4{grid-template-columns:repeat(2,1fr)}
+  .pillar-row,.pillar-row.col4{grid-template-columns:1fr}
+  .step-flow,.step-flow.col5,.step-flow.col6{grid-template-columns:repeat(2,1fr)}
+  .compare-wrap{grid-template-columns:1fr;gap:12px}
+  .compare-vs{padding:4px 0;transform:rotate(90deg)}
+  .summary-grid{grid-template-columns:1fr}
+  .hook-flow{flex-direction:column;gap:8px}
+  .hook-arrow{transform:rotate(90deg);padding:4px 0}
+  .section-title{font-size:1.5rem}
+  .hero h1{font-size:2rem}
+}
+@media(max-width:600px){
+  .card-grid.col2,.card-grid.col3,.card-grid.col4{grid-template-columns:1fr}
+  .step-flow,.step-flow.col3,.step-flow.col5,.step-flow.col6{grid-template-columns:1fr}
+  .hero{padding:56px 0 40px}
+  .hero h1{font-size:1.6rem}
+  section{padding:44px 0}
+  .container{padding:0 16px}
+  .ctx-layer:nth-child(1),.ctx-layer:nth-child(2),.ctx-layer:nth-child(3){width:100%;max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero" id="top">
+<div class="container">
+  <h1 class="fade-up">AI Fluency <span class="accent">入門ガイド</span></h1>
+  <p class="subtitle fade-up">Anthropic Academy 公式コース「AI Fluency: Framework &amp; Foundations」を元に、<br>AI Fluencyフレームワークの全体像を初心者にも分かりやすくまとめた詳細解説ページです。</p>
+  <div class="hero-badges fade-up">
+    <span><i data-lucide="book-open" class="ic"></i> 全13レッスン</span>
+    <span><i data-lucide="layers" class="ic"></i> 10モジュール</span>
+    <span><i data-lucide="graduation-cap" class="ic"></i> Anthropic Academy 公式</span>
+    <span><i data-lucide="badge-check" class="ic"></i> 無料受講</span>
+  </div>
+</div>
+</header>
+
+<!-- ============================== TOC BAR ============================== -->
+<nav class="toc-bar" id="tocBar">
+<div class="container">
+  <div class="toc-inner">
+    <a href="#what">AI Fluencyとは</a>
+    <a href="#why">なぜ必要か</a>
+    <a href="#framework">4Dフレームワーク</a>
+    <a href="#genai">生成AIの基礎</a>
+    <a href="#capabilities">能力と限界</a>
+    <a href="#delegation">Delegation</a>
+    <a href="#description">Description</a>
+    <a href="#prompting">プロンプト技法</a>
+    <a href="#discernment">Discernment</a>
+    <a href="#loop">D-Dループ</a>
+    <a href="#diligence">Diligence</a>
+    <a href="#summary">まとめ</a>
+  </div>
+</div>
+</nav>
+
+<!-- ============================== 1. AI FLUENCYとは ============================== -->
+<section id="what">
+<div class="container">
+  <p class="section-label fade-up">Lesson 1 - Introduction</p>
+  <h2 class="section-title fade-up"><i data-lucide="sparkles" class="ic"></i> AI Fluencyとは？</h2>
+  <p class="section-desc fade-up">AI Fluencyとは、AIとの協働を<strong>効果的・効率的・倫理的・安全</strong>に行う能力のことです。単なるAI技術の知識ではなく、AIとの持続的なコラボレーション・フレームワークを構築するスキルを指します。</p>
+
+  <div class="compare-wrap fade-up">
+    <div class="compare-box left">
+      <h3><i data-lucide="message-circle" class="ic"></i> 従来のAIチャット</h3>
+      <ul class="compare-list">
+        <li>場当たり的なプロンプト入力</li>
+        <li>一時的なTipsやトリックに依存</li>
+        <li>AIの出力をそのまま利用</li>
+        <li>倫理的配慮が曖昧</li>
+        <li>AIツールごとに学び直し</li>
+      </ul>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-box right">
+      <h3><i data-lucide="brain" class="ic"></i> AI Fluency アプローチ</h3>
+      <ul class="compare-list">
+        <li>体系的なフレームワークで協働</li>
+        <li>技術が進化しても通用する持続的スキル</li>
+        <li>批判的思考でAI出力を評価</li>
+        <li>透明性と責任を重視</li>
+        <li>どのAIシステムにも適用可能</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card-grid col4 fade-up" style="margin-top:32px">
+    <div class="card" style="text-align:center;border-top:3px solid var(--primary)">
+      <div class="card-icon" style="background:var(--light2);color:var(--primary);margin:0 auto 12px"><i data-lucide="target" class="ic ic-lg"></i></div>
+      <h3>Effective</h3>
+      <p>目的に合った質の高い成果を生み出す</p>
+    </div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--secondary)">
+      <div class="card-icon" style="background:var(--light2);color:var(--secondary);margin:0 auto 12px"><i data-lucide="zap" class="ic ic-lg"></i></div>
+      <h3>Efficient</h3>
+      <p>時間とリソースを最適に活用する</p>
+    </div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--accent)">
+      <div class="card-icon" style="background:var(--green-light);color:var(--accent);margin:0 auto 12px"><i data-lucide="heart" class="ic ic-lg"></i></div>
+      <h3>Ethical</h3>
+      <p>倫理的な配慮を持って利用する</p>
+    </div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--purple)">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple);margin:0 auto 12px"><i data-lucide="shield" class="ic ic-lg"></i></div>
+      <h3>Safe</h3>
+      <p>安全性を確保した上で活用する</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px;padding:20px 24px;background:var(--dark);border-radius:var(--radius);color:var(--white)">
+    <p style="font-size:.95rem;font-weight:600;margin-bottom:4px"><i data-lucide="key" class="ic" style="color:var(--accent)"></i> コースの目標</p>
+    <p style="font-size:.88rem;opacity:.8">本コースを修了すると、AI協働のための思考フレームワーク、AIの効果的な活用方法への自信、実践的なコラボレーションスキル、そしてAI支援成果物を責任を持って評価・共有する能力が身につきます。</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 2. なぜAI FLUENCYが必要か ============================== -->
+<section id="why">
+<div class="container">
+  <p class="section-label fade-up">Lesson 2 - Why AI Fluency?</p>
+  <h2 class="section-title fade-up"><i data-lucide="trending-up" class="ic"></i> なぜAI Fluencyが必要か</h2>
+  <p class="section-desc fade-up">AIとの関わり方は3つの段階に分かれます。それぞれの段階で必要なスキルセットが異なり、AI Fluencyフレームワークがその全てをカバーします。</p>
+
+  <div class="pillar-row fade-up">
+    <div class="pillar c1">
+      <span class="num">1</span>
+      <div class="icon"><i data-lucide="cpu" class="ic ic-xl"></i></div>
+      <h3>Automation（自動化）</h3>
+      <p>あなたの指示に基づき、AIが特定のタスクを実行します。明確な指示を出し、結果を確認する能力が求められます。</p>
+    </div>
+    <div class="pillar c2">
+      <span class="num">2</span>
+      <div class="icon"><i data-lucide="users" class="ic ic-xl"></i></div>
+      <h3>Augmentation（拡張）</h3>
+      <p>あなたとAIが創造的思考やタスク実行のパートナーとして協働します。対話を通じて互いの強みを活かし合います。</p>
+    </div>
+    <div class="pillar c3">
+      <span class="num">3</span>
+      <div class="icon"><i data-lucide="bot" class="ic ic-xl"></i></div>
+      <h3>Agency（自律）</h3>
+      <p>AIが自律的にあなたの代わりに行動します。個別タスクではなく、知識と行動パターンを設定する能力が必要です。</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> 重要なポイント</p>
+      <p>AI Fluencyのスキルは、Automation・Augmentation・Agencyの全ての段階に共通して適用できます。AIの技術が進化しても、このフレームワークは変わらず役立ちます。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 3. 4Dフレームワーク ============================== -->
+<section id="framework">
+<div class="container">
+  <p class="section-label fade-up">Lesson 3 - The 4D Framework</p>
+  <h2 class="section-title fade-up"><i data-lucide="layout-grid" class="ic"></i> 4Dフレームワーク</h2>
+  <p class="section-desc fade-up">AI Fluencyの核心となる4つのコンピテンシー（4D）を紹介します。これらは互いに補完し合い、AIとの全ての関わり方に適用されます。</p>
+
+  <div class="pillar-row col4 fade-up">
+    <div class="pillar c1">
+      <span class="num">D1</span>
+      <div class="icon"><i data-lucide="git-branch" class="ic ic-xl"></i></div>
+      <h3>Delegation<br><small style="font-weight:400;opacity:.8">委任</small></h3>
+      <p>自分でやるべきか、AIに任せるべきかを戦略的に判断する能力</p>
+    </div>
+    <div class="pillar c2">
+      <span class="num">D2</span>
+      <div class="icon"><i data-lucide="pen-line" class="ic ic-xl"></i></div>
+      <h3>Description<br><small style="font-weight:400;opacity:.8">記述</small></h3>
+      <p>AIシステムと効果的にコミュニケーションする能力</p>
+    </div>
+    <div class="pillar c3">
+      <span class="num">D3</span>
+      <div class="icon"><i data-lucide="scan-eye" class="ic ic-xl"></i></div>
+      <h3>Discernment<br><small style="font-weight:400;opacity:.8">見極め</small></h3>
+      <p>AIの出力と行動を批判的に評価する能力</p>
+    </div>
+    <div class="pillar c4">
+      <span class="num">D4</span>
+      <div class="icon"><i data-lucide="shield-check" class="ic ic-xl"></i></div>
+      <h3>Diligence<br><small style="font-weight:400;opacity:.8">誠実さ</small></h3>
+      <p>責任ある倫理的なAI協働を実践する能力</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px;padding:20px 24px;background:var(--dark);border-radius:var(--radius);color:var(--white)">
+    <p style="font-size:.95rem;font-weight:600;margin-bottom:4px"><i data-lucide="refresh-cw" class="ic" style="color:var(--accent)"></i> 4Dの相互作用</p>
+    <p style="font-size:.88rem;opacity:.8">4Dのコンピテンシーは独立したスキルではなく、AIとの協働プロセス全体を通じて連動します。特にDescriptionとDiscernmentは継続的なフィードバックループを形成し、Delegationが全体の方向性を定め、Diligenceが倫理的な枠組みを提供します。</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 4. 生成AIの基礎 ============================== -->
+<section id="genai">
+<div class="container">
+  <p class="section-label fade-up">Lesson 4 - Deep Dive 1</p>
+  <h2 class="section-title fade-up"><i data-lucide="brain" class="ic"></i> 生成AIの基礎</h2>
+  <p class="section-desc fade-up">生成AIは既存のデータを分析するだけでなく、<strong>新しいコンテンツ（テキスト・画像・コードなど）を生成</strong>できる点が特徴です。現代のLLMを可能にした3つの要素を理解しましょう。</p>
+
+  <div class="pillar-row fade-up">
+    <div class="pillar c1">
+      <span class="num">1</span>
+      <div class="icon"><i data-lucide="circuit-board" class="ic ic-xl"></i></div>
+      <h3>アルゴリズム革新</h3>
+      <p>特にTransformerアーキテクチャの登場が、大規模言語モデル（LLM）の実現を可能にしました。</p>
+    </div>
+    <div class="pillar c2">
+      <span class="num">2</span>
+      <div class="icon"><i data-lucide="database" class="ic ic-xl"></i></div>
+      <h3>膨大な学習データ</h3>
+      <p>インターネット上の大量のデジタルテキストデータが、モデルのパターン学習の基盤となりました。</p>
+    </div>
+    <div class="pillar c3">
+      <span class="num">3</span>
+      <div class="icon"><i data-lucide="server" class="ic ic-xl"></i></div>
+      <h3>計算能力の飛躍</h3>
+      <p>GPUの進化やクラウドコンピューティングにより、大規模モデルの訓練が現実的になりました。</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:36px 0 16px"><i data-lucide="layers" class="ic"></i> LLMの学習プロセス</h3>
+  <div class="card-grid col2 fade-up">
+    <div class="card">
+      <div class="card-icon" style="background:var(--light2);color:var(--primary)"><i data-lucide="graduation-cap" class="ic ic-lg"></i></div>
+      <h3>Pre-training（事前学習）</h3>
+      <p>数十億のテキスト例からパターンを分析・学習します。言語の構造、事実、推論パターンなど広範な知識を獲得する段階です。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="settings" class="ic ic-lg"></i></div>
+      <h3>Fine-tuning（微調整）</h3>
+      <p>指示に従い、有用な回答を提供できるよう調整します。人間のフィードバックを活用して、対話能力と安全性を向上させる段階です。</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:24px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> 覚えておこう</p>
+      <p>コンテキストウィンドウとは、モデルが一度に処理できるテキストの量のことです。この制約を理解することで、より効果的なプロンプト設計が可能になります。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 5. AIの能力と限界 ============================== -->
+<section id="capabilities">
+<div class="container">
+  <p class="section-label fade-up">Lesson 5 - Deep Dive 1</p>
+  <h2 class="section-title fade-up"><i data-lucide="scale" class="ic"></i> AIの能力と限界</h2>
+  <p class="section-desc fade-up">生成AIは非常に多機能ですが、万能ではありません。能力と限界の両方を正しく理解することが、効果的なDelegation（委任）の基盤となります。</p>
+
+  <div class="compare-wrap fade-up">
+    <div class="compare-box left">
+      <h3><i data-lucide="check-circle" class="ic"></i> 現在の能力</h3>
+      <ul class="compare-list">
+        <li>多様な言語タスクへの柔軟な対応</li>
+        <li>文脈を理解した会話の継続</li>
+        <li>追加学習なしでのタスク切り替え</li>
+        <li>外部ツールとの連携</li>
+        <li>コード生成・分析・デバッグ</li>
+      </ul>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-box right">
+      <h3><i data-lucide="alert-triangle" class="ic"></i> 現在の限界</h3>
+      <ul class="compare-list">
+        <li>知識のカットオフ日（最新情報を持たない）</li>
+        <li>ハルシネーション（事実と異なる出力）</li>
+        <li>コンテキストウィンドウの制約</li>
+        <li>複雑な推論での誤り</li>
+        <li>感情・価値観の真の理解の欠如</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px;padding:20px 24px;background:var(--dark);border-radius:var(--radius);color:var(--white)">
+    <p style="font-size:.95rem;font-weight:600;margin-bottom:4px"><i data-lucide="lightbulb" class="ic" style="color:var(--accent)"></i> 最も効果的なアプローチ</p>
+    <p style="font-size:.88rem;opacity:.8">人間の<strong>批判的思考・判断力・創造性・倫理的監視</strong>とAIの<strong>処理速度・知識量・多機能性</strong>を組み合わせることで、最大の成果が生まれます。</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 6. DELEGATION ============================== -->
+<section id="delegation">
+<div class="container">
+  <p class="section-label fade-up">Lesson 6-7 - First D</p>
+  <h2 class="section-title fade-up"><i data-lucide="git-branch" class="ic"></i> Delegation（委任）</h2>
+  <p class="section-desc fade-up">Delegationは4Dの最初のコンピテンシーです。自分でやるか、AIと協働するか、AIに任せるかを<strong>戦略的に判断</strong>するスキルです。3つの構成要素で理解しましょう。</p>
+
+  <div class="ctx-layers fade-up">
+    <div class="ctx-layer">
+      <h4><i data-lucide="compass" class="ic"></i> Problem Awareness（問題認識）</h4>
+      <p>自分の目標と、達成に必要な作業を明確に理解する</p>
+    </div>
+    <div class="ctx-layer">
+      <h4><i data-lucide="monitor" class="ic"></i> Platform Awareness（プラットフォーム認識）</h4>
+      <p>異なるAIシステムの能力と制限を把握する</p>
+    </div>
+    <div class="ctx-layer">
+      <h4><i data-lucide="share-2" class="ic"></i> Task Delegation（タスク委任）</h4>
+      <p>人間とAIの強みを活かして戦略的にタスクを分配する</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:36px 0 16px"><i data-lucide="list-checks" class="ic"></i> Delegation実践のステップ</h3>
+  <div class="step-flow fade-up">
+    <div class="step-item">
+      <h4>ビジョン定義</h4>
+      <p>プロジェクトの最終目標と成功のイメージを明確にする</p>
+    </div>
+    <div class="step-item">
+      <h4>タスク分解</h4>
+      <p>目標達成に必要な個別タスクをリストアップする</p>
+    </div>
+    <div class="step-item">
+      <h4>分担分析</h4>
+      <p>各タスクに必要なスキルと、人間・AIの適性を評価する</p>
+    </div>
+    <div class="step-item">
+      <h4>計画策定</h4>
+      <p>タスクごとの分担を決定し、実行計画を作成する</p>
+    </div>
+  </div>
+
+  <div class="card-grid col2 fade-up" style="margin-top:28px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> 良い委任例</p>
+      <p>「このプレゼン資料の構成案を一緒に考えてほしい。私が業界知識と聴衆の特性を提供するので、あなたはストーリーの流れとスライド構成を提案してください。」</p>
+    </div>
+    <div class="prompt-ex bad">
+      <p class="label"><i data-lucide="circle-x" class="ic"></i> 悪い委任例</p>
+      <p>「プレゼン資料を作って。」（目標・コンテキスト・分担が不明確で、AIの能力を最大限に活かせない）</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 7. DESCRIPTION ============================== -->
+<section id="description">
+<div class="container">
+  <p class="section-label fade-up">Lesson 8 - Second D</p>
+  <h2 class="section-title fade-up"><i data-lucide="pen-line" class="ic"></i> Description（記述）</h2>
+  <p class="section-desc fade-up">Descriptionは単なるプロンプト入力ではありません。AIとの<strong>生産的な協働環境を構築する</strong>コミュニケーション技術です。3つの層で構成されます。</p>
+
+  <div class="ctx-layers fade-up">
+    <div class="ctx-layer">
+      <h4><i data-lucide="package" class="ic"></i> Product Description（成果物の記述）</h4>
+      <p>何を作りたいのか - 出力形式、対象読者、スタイル、詳細度を明確に定義する</p>
+    </div>
+    <div class="ctx-layer">
+      <h4><i data-lucide="workflow" class="ic"></i> Process Description（手順の記述）</h4>
+      <p>どうアプローチするか - 使用する手法、フレームワーク、ステップを指定する</p>
+    </div>
+    <div class="ctx-layer">
+      <h4><i data-lucide="sliders-horizontal" class="ic"></i> Performance Description（振る舞いの記述）</h4>
+      <p>どう振る舞うか - 簡潔か詳細か、挑戦的か協力的か、対話スタイルを定義する</p>
+    </div>
+  </div>
+
+  <div class="card-grid col2 fade-up" style="margin-top:28px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> 3層を意識したDescription例</p>
+      <p><strong>Product:</strong>「IT未経験者向けのAI入門記事（2000字、箇条書き多め）」<br><strong>Process:</strong>「まず専門用語リストを作成し、各概念を身近な例えで説明してから構成を組んでください」<br><strong>Performance:</strong>「わかりやすさを最優先に。質問があれば遠慮なく聞いてください」</p>
+    </div>
+    <div class="prompt-ex bad">
+      <p class="label"><i data-lucide="circle-x" class="ic"></i> 曖昧なDescription例</p>
+      <p>「AIについて記事を書いて。初心者向けにしてね。」（成果物の仕様が曖昧で、プロセスとパフォーマンスの指定がない）</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:24px;padding:20px 24px;background:var(--dark);border-radius:var(--radius);color:var(--white)">
+    <p style="font-size:.95rem;font-weight:600;margin-bottom:4px"><i data-lucide="key" class="ic" style="color:var(--accent)"></i> 核心原則</p>
+    <p style="font-size:.88rem;opacity:.8">AIはあなたの心を読めません。結果の質は、あなたがニーズ・アプローチ・望む対話スタイルをどれだけ明確に伝えるかに大きく左右されます。事前の明確なコミュニケーションが時間を節約し、より良い結果につながります。</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 8. プロンプト技法 ============================== -->
+<section id="prompting">
+<div class="container">
+  <p class="section-label fade-up">Lesson 9 - Deep Dive 2</p>
+  <h2 class="section-title fade-up"><i data-lucide="wand-2" class="ic"></i> 6つの基本プロンプト技法</h2>
+  <p class="section-desc fade-up">プロンプトエンジニアリングとは、AIへの効果的な指示をデザインする実践です。人間同士のコミュニケーション原則とAI固有の考慮事項を組み合わせた、6つの基本技法を紹介します。</p>
+
+  <div class="step-flow col6 fade-up">
+    <div class="step-item">
+      <h4>コンテキストを与える</h4>
+      <p>何を、なぜ求めているのか、関連する背景情報を具体的に伝える</p>
+    </div>
+    <div class="step-item">
+      <h4>例を示す</h4>
+      <p>求めている出力のスタイルやフォーマットの具体例を提示する</p>
+    </div>
+    <div class="step-item">
+      <h4>制約を指定する</h4>
+      <p>フォーマット、長さ、トーン、その他の出力要件を明確に定義する</p>
+    </div>
+    <div class="step-item">
+      <h4>ステップに分解する</h4>
+      <p>複雑なタスクを段階的に分割し、AIの推論をガイドする</p>
+    </div>
+    <div class="step-item">
+      <h4>考える時間を与える</h4>
+      <p>AIがプロセスを経て考えるための余地を設ける</p>
+    </div>
+    <div class="step-item">
+      <h4>役割やトーンを定義する</h4>
+      <p>AIにどのような立場・口調でコミュニケーションしてほしいか指定する</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> 秘密兵器 - AIにプロンプト改善を頼む</p>
+      <p>「このプロンプトをもっと効果的にするには、どんな情報を追加すべきですか？」とAI自身に聞いてみましょう。AIはあなたのプロンプトの曖昧さや不足を指摘し、改善案を提案できます。プロンプト設計は反復的なプロセスです。</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:28px 0 16px"><i data-lucide="lightbulb" class="ic"></i> 効果的なプロンプトの共通パターン</h3>
+  <div class="card-grid col4 fade-up">
+    <div class="card" style="padding:18px 16px">
+      <h3 style="font-size:.9rem"><i data-lucide="file-text" class="ic"></i> タスク概要</h3>
+      <p style="font-size:.8rem">何をしてほしいかの明確な全体像</p>
+    </div>
+    <div class="card" style="padding:18px 16px">
+      <h3 style="font-size:.9rem"><i data-lucide="layout-template" class="ic"></i> フォーマット指定</h3>
+      <p style="font-size:.8rem">出力形式・構造の具体的な指定</p>
+    </div>
+    <div class="card" style="padding:18px 16px">
+      <h3 style="font-size:.9rem"><i data-lucide="ruler" class="ic"></i> 明示的制約</h3>
+      <p style="font-size:.8rem">長さ・範囲・トーンの制限条件</p>
+    </div>
+    <div class="card" style="padding:18px 16px">
+      <h3 style="font-size:.9rem"><i data-lucide="info" class="ic"></i> 背景情報</h3>
+      <p style="font-size:.8rem">タスクの目的に関連する文脈</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 9. DISCERNMENT ============================== -->
+<section id="discernment">
+<div class="container">
+  <p class="section-label fade-up">Lesson 10 - Third D</p>
+  <h2 class="section-title fade-up"><i data-lucide="scan-eye" class="ic"></i> Discernment（見極め）</h2>
+  <p class="section-desc fade-up">DiscernmentはDescriptionの対になるコンピテンシーです。AIに何を伝えるかだけでなく、<strong>AIから何を受け取るかを批判的に評価</strong>するスキルです。</p>
+
+  <div class="info-stack fade-up">
+    <div class="info-row">
+      <div class="info-num" style="background:var(--primary);color:var(--white)"><i data-lucide="package" class="ic"></i></div>
+      <div>
+        <h4>Product Discernment（成果物の見極め）</h4>
+        <p>AIの出力そのものの品質を評価します。正確性、適切さ、一貫性、関連性などを確認し、事実誤認や不正確な情報がないかをチェックします。</p>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="info-num" style="background:var(--secondary);color:var(--white)"><i data-lucide="workflow" class="ic"></i></div>
+      <div>
+        <h4>Process Discernment（プロセスの見極め）</h4>
+        <p>AIがどのようにその出力に到達したかを評価します。論理的な誤り、注意力の欠落、不適切な推論がないかを確認します。</p>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="info-num" style="background:var(--accent);color:var(--dark)"><i data-lucide="sliders-horizontal" class="ic"></i></div>
+      <div>
+        <h4>Performance Discernment（振る舞いの見極め）</h4>
+        <p>協働プロセスにおけるAIの行動を評価します。コミュニケーションスタイルがニーズに合っているか、指示に適切に応答しているかを確認します。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-grid col3 fade-up" style="margin-top:28px">
+    <div class="card">
+      <div class="card-icon" style="background:var(--warn-light);color:#92400E"><i data-lucide="search" class="ic ic-lg"></i></div>
+      <h3>事実確認</h3>
+      <p>AIが提示する事実や数値は必ず独立した情報源で検証しましょう。ハルシネーションは自信を持って提示されることがあります。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple)"><i data-lucide="git-compare" class="ic ic-lg"></i></div>
+      <h3>論理チェック</h3>
+      <p>AIの推論プロセスを段階的に確認します。結論が前提から論理的に導かれているかを検証しましょう。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="message-square-text" class="ic ic-lg"></i></div>
+      <h3>フィードバック</h3>
+      <p>具体的なフィードバックを提供し、AIの応答を改善していきましょう。何が良くて何が足りないかを明確に伝えます。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 10. D-Dループ ============================== -->
+<section id="loop">
+<div class="container">
+  <p class="section-label fade-up">Lesson 11 - Iterative Practice</p>
+  <h2 class="section-title fade-up"><i data-lucide="refresh-cw" class="ic"></i> Description-Discernmentループ</h2>
+  <p class="section-desc fade-up">DescriptionとDiscernmentは継続的なフィードバックループを形成します。<strong>伝える → 評価する → 改善する</strong>のサイクルを繰り返すことで、人間とAIそれぞれの能力を超えた成果を実現できます。</p>
+
+  <div class="hook-flow fade-up">
+    <div class="hook-box pre"><i data-lucide="pen-line" class="ic"></i> Description<br><small>明確に伝える</small></div>
+    <div class="hook-arrow"><i data-lucide="arrow-right" class="ic"></i></div>
+    <div class="hook-box tool"><i data-lucide="cpu" class="ic"></i> AI出力<br><small>生成・応答</small></div>
+    <div class="hook-arrow"><i data-lucide="arrow-right" class="ic"></i></div>
+    <div class="hook-box post"><i data-lucide="scan-eye" class="ic"></i> Discernment<br><small>批判的に評価</small></div>
+  </div>
+
+  <div class="fade-up" style="text-align:center;margin:-16px 0 24px">
+    <i data-lucide="corner-down-left" class="ic ic-xl" style="color:var(--accent)"></i>
+    <span style="font-size:.85rem;color:var(--text-mid);font-weight:600;margin-left:8px">フィードバックを反映して再度Descriptionへ</span>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:16px"><i data-lucide="list-ordered" class="ic"></i> ループの4ステップ</h3>
+  <div class="step-flow fade-up">
+    <div class="step-item">
+      <h4>Describe</h4>
+      <p>Product / Process / Performanceの3層を意識して明確に伝える</p>
+    </div>
+    <div class="step-item">
+      <h4>Discern</h4>
+      <p>成果物・プロセス・振る舞いの3観点で批判的に評価する</p>
+    </div>
+    <div class="step-item">
+      <h4>Refine</h4>
+      <p>何が良く何が悪かったかのフィードバックを提供し、記述を調整する</p>
+    </div>
+    <div class="step-item">
+      <h4>Integrate</h4>
+      <p>自分の専門知識・判断力を加え、最終成果物の責任を持つ</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> ループ実践のコツ</p>
+      <p>各ステップで満足できない場合は、遠慮なく繰り返しましょう。「導入部分は良いですが、具体例が不足しています。業界データを使った例を3つ追加してください」のように、<strong>具体的なフィードバック</strong>が改善の鍵です。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 11. DILIGENCE ============================== -->
+<section id="diligence">
+<div class="container">
+  <p class="section-label fade-up">Lesson 12 - Fourth D</p>
+  <h2 class="section-title fade-up"><i data-lucide="shield-check" class="ic"></i> Diligence（誠実さ）</h2>
+  <p class="section-desc fade-up">Diligenceは他の3つのDが主に「効果性」と「効率性」に焦点を当てるのに対し、<strong>「倫理性」と「安全性」</strong>を担うコンピテンシーです。責任あるAI協働の実践を学びましょう。</p>
+
+  <div class="pillar-row fade-up">
+    <div class="pillar c1">
+      <span class="num">C</span>
+      <div class="icon"><i data-lucide="wrench" class="ic ic-xl"></i></div>
+      <h3>Creation Diligence<br><small style="font-weight:400;opacity:.8">創造の誠実さ</small></h3>
+      <p>どのAIシステムを選び、どのように活用するかを慎重に判断する。プライバシーやセキュリティへの配慮も含む。</p>
+    </div>
+    <div class="pillar c2">
+      <span class="num">T</span>
+      <div class="icon"><i data-lucide="eye" class="ic ic-xl"></i></div>
+      <h3>Transparency Diligence<br><small style="font-weight:400;opacity:.8">透明性の誠実さ</small></h3>
+      <p>AIが自分の成果物にどのように貢献したかを、関係者に対してオープンに開示する。</p>
+    </div>
+    <div class="pillar c3">
+      <span class="num">D</span>
+      <div class="icon"><i data-lucide="send" class="ic ic-xl"></i></div>
+      <h3>Deployment Diligence<br><small style="font-weight:400;opacity:.8">展開の誠実さ</small></h3>
+      <p>AI支援で作成した成果物を共有する際、内容の検証と品質保証の責任を持つ。</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:36px 0 16px"><i data-lucide="file-text" class="ic"></i> Diligence Statement（誠実さの表明）</h3>
+  <div class="demo-card fade-up">
+    <span class="demo-tag" style="background:var(--green-light);color:var(--green)">テンプレート例</span>
+    <h3><i data-lucide="quote" class="ic"></i> Diligence Statementの構成</h3>
+    <p>本 [文書/プロジェクト/コンテンツ] の作成にあたり、[AIアシスタント名] と [具体的なタスク: 下書き、リサーチ、編集等] において協働しました。AIが生成・共同作成した全コンテンツについて、徹底的なレビューと評価を実施したことを確認します。最終成果物は私の理解、専門知識、意図する内容を正確に反映しています。</p>
+    <span class="result"><i data-lucide="check-circle" class="ic"></i> 透明性と責任の両立</span>
+  </div>
+
+  <div class="card-grid col3 fade-up">
+    <div class="card">
+      <div class="card-icon" style="background:var(--light2);color:var(--primary)"><i data-lucide="user" class="ic ic-lg"></i></div>
+      <h3>個人利用</h3>
+      <p>個人的な基準に基づき、AIの利用方法と成果物への責任を自覚する</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple)"><i data-lucide="graduation-cap" class="ic ic-lg"></i></div>
+      <h3>学術利用</h3>
+      <p>教育機関のAI利用ポリシーを遵守し、適切な開示と引用を行う</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="briefcase" class="ic ic-lg"></i></div>
+      <h3>業務利用</h3>
+      <p>組織のガイドラインに従い、機密情報の取り扱いと品質保証を徹底する</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 12. まとめ ============================== -->
+<section id="summary">
+<div class="container">
+  <p class="section-label fade-up">Lesson 13 - Conclusion</p>
+  <h2 class="section-title fade-up"><i data-lucide="award" class="ic"></i> コースまとめ</h2>
+  <p class="section-desc fade-up">全13レッスンで学んだAI Fluencyフレームワークの全体像を振り返りましょう。</p>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:16px"><i data-lucide="check-circle" class="ic" style="color:var(--accent)"></i> 学んだこと一覧</h3>
+  <div class="summary-grid fade-up">
+    <div class="summary-item">
+      <i data-lucide="sparkles" class="ic"></i>
+      <p><strong>AI Fluency</strong>：AIとの協働を効果的・効率的・倫理的・安全に行うための包括的フレームワーク</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="cpu" class="ic"></i>
+      <p><strong>3つの活用法</strong>：Automation（自動化）・Augmentation（拡張）・Agency（自律）</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="git-branch" class="ic"></i>
+      <p><strong>Delegation</strong>：専門知識と判断力が効果的なAI協働の基盤であることを理解</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="pen-line" class="ic"></i>
+      <p><strong>Description</strong>：意図とAIの能力を橋渡しする明確なコミュニケーション</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="scan-eye" class="ic"></i>
+      <p><strong>Discernment</strong>：AIシステムの制約の中で成果物を批判的に評価</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="shield-check" class="ic"></i>
+      <p><strong>Diligence</strong>：AI協働における説明責任・透明性・責任感の確保</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="brain" class="ic"></i>
+      <p><strong>生成AI基礎</strong>：Transformer、事前学習/微調整、コンテキストウィンドウの理解</p>
+    </div>
+    <div class="summary-item">
+      <i data-lucide="wand-2" class="ic"></i>
+      <p><strong>プロンプト技法</strong>：コンテキスト、例示、制約、分解、思考時間、役割定義の6技法</p>
+    </div>
+  </div>
+
+  <div class="fade-up" style="margin-top:28px;padding:20px 24px;background:var(--dark);border-radius:var(--radius);color:var(--white)">
+    <p style="font-size:.95rem;font-weight:600;margin-bottom:8px"><i data-lucide="compass" class="ic" style="color:var(--accent)"></i> 最も重要なメッセージ</p>
+    <p style="font-size:.88rem;opacity:.8;margin-bottom:4px">AIシステムは強力ですが、魔法ではありません。私たちの思慮深い関わりによってのみ、有用かつ安全になります。AI Fluencyは一夜にして身につくものではなく、実践を通じて発展するスキルです。</p>
+    <p style="font-size:.88rem;opacity:.8">人間とAIが互いの強みを活かし合うとき、最も強力な成果が生まれます。</p>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:36px 0 16px"><i data-lucide="external-link" class="ic"></i> 参考リンク</h3>
+  <div class="card-grid col3 fade-up">
+    <div class="card" style="text-align:center">
+      <div class="card-icon" style="background:var(--light2);color:var(--primary);margin:0 auto 12px"><i data-lucide="book-open" class="ic ic-lg"></i></div>
+      <h3>Anthropic Academy</h3>
+      <p style="font-size:.82rem"><a href="https://anthropic.skilljar.com/ai-fluency-framework-and-foundations" target="_blank">公式コースページ</a></p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green);margin:0 auto 12px"><i data-lucide="globe" class="ic ic-lg"></i></div>
+      <h3>Claude.ai</h3>
+      <p style="font-size:.82rem"><a href="https://claude.ai" target="_blank">Claude を使ってみる</a></p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple);margin:0 auto 12px"><i data-lucide="book" class="ic ic-lg"></i></div>
+      <h3>AI Fluency Framework</h3>
+      <p style="font-size:.82rem"><a href="https://ringling.libguides.com/ai/framework" target="_blank">フレームワーク原典</a></p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="site-footer">
+  <div class="logo-f">AI Fluency 入門ガイド</div>
+  <p>Anthropic Academy 公式コース「AI Fluency: Framework &amp; Foundations」の内容を元に作成 | 本ページは学習目的の非公式まとめです</p>
+  <p style="margin-top:8px;font-size:.75rem;opacity:.6">Copyright 2025 Rick Dakan, Joseph Feller, and Anthropic. CC BY-NC-SA 4.0</p>
+</footer>
+
+<!-- BACK TO TOP -->
+<button class="btt" id="btt" aria-label="トップへ戻る"><i data-lucide="chevron-up" class="ic"></i></button>
+
+<script>
+// Lucide Icons init
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.lucide) lucide.createIcons();
+});
+
+// Sticky TOC shadow
+const toc = document.getElementById('tocBar');
+if (toc) {
+  window.addEventListener('scroll', () => {
+    toc.classList.toggle('scrolled', window.scrollY > 10);
+  }, {passive:true});
+}
+
+// Active TOC highlight
+const tocLinks = document.querySelectorAll('.toc-inner a');
+const sections = document.querySelectorAll('section[id]');
+function updateTOC() {
+  let cur = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) cur = s.id;
+  });
+  tocLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+}
+window.addEventListener('scroll', updateTOC, {passive:true});
+
+// Fade-in animation
+const obs = new IntersectionObserver((entries, o) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      o.unobserve(e.target);
+    }
+  });
+}, {threshold:0.05, rootMargin:'0px 0px -20px 0px'});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+// Fallback for elements that might not trigger
+setTimeout(() => {
+  document.querySelectorAll('.fade-up:not(.visible)').forEach(el => el.classList.add('visible'));
+}, 3000);
+
+// Back to top button
+const btt = document.getElementById('btt');
+if (btt) {
+  window.addEventListener('scroll', () => {
+    btt.classList.toggle('show', window.scrollY > 500);
+  }, {passive:true});
+  btt.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+}
+</script>
+</body>
+</html>

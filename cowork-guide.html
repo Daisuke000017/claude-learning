@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Cowork 入門ガイド｜詳細解説</title>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#0B1929;--dark2:#132A43;--dark3:#1A3550;
+  --primary:#065A82;--secondary:#1C7293;
+  --accent:#02C39A;--accent-dark:#019875;
+  --light:#EFF6FA;--light2:#E3F0F7;--light3:#D1E8F0;
+  --text:#1E293B;--text-mid:#475569;--text-light:#94A3B8;
+  --white:#FFFFFF;
+  --warn:#F59E0B;--warn-light:#FEF3C7;
+  --red:#E11D48;--red-light:#FEE2E2;
+  --green:#059669;--green-light:#D1FAE5;
+  --purple:#7C3AED;--purple-light:#EDE9FE;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 4px 24px rgba(11,25,41,.10);
+  --shadow-sm:0 2px 8px rgba(11,25,41,.08);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;color:var(--text);background:var(--white);line-height:1.75;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:var(--primary);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent)}
+
+/* ===== UTILITY ===== */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+.accent{color:var(--accent)}
+.tag{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 10px;border-radius:99px;letter-spacing:.04em}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+/* ===== HERO ===== */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,var(--primary) 50%,var(--secondary) 100%);color:var(--white);padding:80px 0 60px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:rgba(2,195,154,.12)}
+.hero::after{content:"";position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero h1{font-size:2.6rem;font-weight:800;margin-bottom:12px;position:relative}
+.hero .subtitle{font-size:1.15rem;color:rgba(255,255,255,.8);max-width:600px;position:relative}
+.hero-badges{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;position:relative}
+.hero-badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);padding:6px 16px;border-radius:99px;font-size:.82rem;backdrop-filter:blur(4px)}
+
+/* ===== NAV (sticky TOC) ===== */
+.toc-bar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--light2);transition:box-shadow .3s}
+.toc-bar.scrolled{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.toc-inner{display:flex;align-items:center;gap:6px;padding:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.toc-inner::-webkit-scrollbar{display:none}
+.toc-inner a{flex-shrink:0;font-size:.78rem;font-weight:600;padding:6px 14px;border-radius:99px;color:var(--text-mid);transition:all .25s;white-space:nowrap}
+.toc-inner a:hover,.toc-inner a.active{background:var(--accent);color:var(--white)}
+
+/* ===== SECTIONS ===== */
+section{padding:64px 0}
+section:nth-child(even){background:var(--light)}
+.section-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:6px}
+.section-title{font-size:1.9rem;font-weight:800;color:var(--dark);margin-bottom:8px}
+.section-desc{color:var(--text-mid);max-width:700px;margin-bottom:36px;font-size:1rem}
+
+/* ===== CARD GRID ===== */
+.card-grid{display:grid;gap:20px}
+.card-grid.col2{grid-template-columns:repeat(2,1fr)}
+.card-grid.col3{grid-template-columns:repeat(3,1fr)}
+.card-grid.col4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--white);border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow-sm);border:1px solid var(--light2);transition:transform .25s,box-shadow .25s}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card-icon{width:48px;height:48px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:14px;font-weight:700}
+.card h3{font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--dark)}
+.card p{font-size:.88rem;color:var(--text-mid);line-height:1.65}
+
+/* ===== COMPARISON ===== */
+.compare-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch}
+.compare-box{border-radius:var(--radius);padding:28px 24px}
+.compare-box.left{background:var(--light2);border:2px solid var(--light3)}
+.compare-box.right{background:var(--dark);color:var(--white);border:2px solid var(--secondary)}
+.compare-box h3{font-size:1.1rem;font-weight:700;margin-bottom:14px}
+.compare-vs{display:flex;align-items:center;justify-content:center;padding:0 16px;font-size:1.2rem;font-weight:800;color:var(--text-light)}
+.compare-list{list-style:none;font-size:.9rem;line-height:2}
+.compare-list li::before{content:"•";margin-right:8px;font-weight:700}
+.compare-box.left .compare-list li::before{color:var(--text-light)}
+.compare-box.right .compare-list li::before{color:var(--accent)}
+
+/* ===== PILLAR ===== */
+.pillar-row{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pillar{border-radius:var(--radius);padding:32px 24px;text-align:center;position:relative;overflow:hidden}
+.pillar .num{position:absolute;top:12px;left:16px;font-size:2rem;font-weight:900;opacity:.15}
+.pillar .icon{font-size:2.4rem;margin-bottom:12px}
+.pillar h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
+.pillar p{font-size:.88rem;line-height:1.65}
+.pillar.plan{background:linear-gradient(135deg,#04405E,#065A82);color:var(--white)}
+.pillar.exec{background:linear-gradient(135deg,#145A75,#1C7293);color:var(--white)}
+.pillar.conn{background:linear-gradient(135deg,#017A5E,#02B08C);color:var(--white)}
+
+/* ===== TOOL HUB ===== */
+.hub-layout{display:grid;grid-template-columns:240px 1fr;gap:32px;align-items:start}
+.hub-center{background:var(--primary);color:var(--white);border-radius:var(--radius);padding:32px 24px;text-align:center;position:sticky;top:80px}
+.hub-center .logo{width:72px;height:72px;border-radius:50%;background:var(--secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:2rem;font-weight:800}
+.hub-center h3{font-size:1.15rem;margin-bottom:8px}
+.hub-center p{font-size:.85rem;color:rgba(255,255,255,.7)}
+.tool-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.tool-card{background:var(--white);border-radius:var(--radius-sm);padding:16px 18px;box-shadow:var(--shadow-sm);border-left:4px solid var(--accent);transition:transform .2s}
+.tool-card:hover{transform:translateX(4px)}
+.tool-card h4{font-size:.92rem;font-weight:700;margin-bottom:2px}
+.tool-card p{font-size:.8rem;color:var(--text-mid)}
+.tool-card .tool-tag{font-size:.65rem;display:inline-block;padding:1px 8px;border-radius:99px;margin-top:6px;font-weight:600}
+
+/* ===== STEPS / FLOW ===== */
+.step-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
+.step-item{position:relative;text-align:center;padding:24px 16px 20px;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--white);font-weight:800;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.step-item h4{margin-top:8px;font-size:.95rem;font-weight:700;margin-bottom:6px}
+.step-item p{font-size:.82rem;color:var(--text-mid)}
+.step-arrow{display:none}
+
+/* ===== PROMPT FORMULA ===== */
+.formula-bar{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+.formula-chip{background:var(--primary);color:var(--white);padding:12px 24px;border-radius:var(--radius-sm);font-weight:700;font-size:1rem}
+.formula-op{font-size:1.4rem;font-weight:800;color:var(--accent)}
+.prompt-ex{border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.prompt-ex.good{background:var(--green-light);border-left:4px solid var(--green)}
+.prompt-ex.bad{background:var(--red-light);border-left:4px solid var(--red)}
+.prompt-ex .label{font-size:.75rem;font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.prompt-ex.good .label{color:var(--green)}
+.prompt-ex.bad .label{color:var(--red)}
+.prompt-ex p{font-size:.9rem;color:var(--text);line-height:1.6}
+
+/* ===== CONTEXT LAYERS ===== */
+.ctx-layers{display:flex;flex-direction:column;align-items:center;gap:0;margin:20px 0}
+.ctx-layer{border-radius:var(--radius);padding:20px 28px;text-align:center;border:2px solid;position:relative}
+.ctx-layer:nth-child(1){width:100%;max-width:700px;background:rgba(6,90,130,.06);border-color:var(--primary)}
+.ctx-layer:nth-child(2){width:85%;max-width:595px;background:rgba(28,114,147,.08);border-color:var(--secondary);margin-top:-8px}
+.ctx-layer:nth-child(3){width:70%;max-width:490px;background:rgba(2,195,154,.08);border-color:var(--accent);margin-top:-8px}
+.ctx-layer h4{font-size:.95rem;font-weight:700;margin-bottom:4px}
+.ctx-layer p{font-size:.82rem;color:var(--text-mid)}
+
+/* ===== PLUGIN STRUCTURE ===== */
+.plugin-tree{background:var(--dark);color:var(--accent);border-radius:var(--radius);padding:28px 32px;font-family:"SF Mono","Fira Code","Consolas",monospace;font-size:.88rem;line-height:2;white-space:pre;overflow-x:auto}
+
+/* ===== SCHEDULE FORMULA ===== */
+.sched-formula{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin:24px 0 36px}
+.sched-chip{padding:16px 28px;border-radius:var(--radius);font-weight:700;font-size:1.05rem;text-align:center}
+.sched-chip.skill{background:var(--primary);color:var(--white)}
+.sched-chip.sched{background:var(--secondary);color:var(--white)}
+.sched-chip.auto{background:var(--accent);color:var(--dark)}
+
+/* ===== SAFETY LAYERS ===== */
+.safety-stack{display:flex;flex-direction:column;gap:12px;max-width:700px;margin:0 auto}
+.safety-row{display:flex;align-items:center;gap:16px;padding:18px 22px;border-radius:var(--radius-sm);background:var(--white);box-shadow:var(--shadow-sm)}
+.safety-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0}
+.safety-row:nth-child(1) .safety-num{background:var(--primary);color:var(--white)}
+.safety-row:nth-child(2) .safety-num{background:var(--secondary);color:var(--white)}
+.safety-row:nth-child(3) .safety-num{background:var(--accent);color:var(--dark)}
+.safety-row:nth-child(4) .safety-num{background:var(--warn);color:var(--dark)}
+.safety-row h4{font-size:.95rem;font-weight:700;margin-bottom:2px}
+.safety-row p{font-size:.82rem;color:var(--text-mid)}
+
+/* ===== ROADMAP ===== */
+.roadmap{display:flex;gap:0;position:relative;margin:20px 0}
+.roadmap::before{content:"";position:absolute;top:28px;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:2px}
+.rm-step{flex:1;text-align:center;position:relative;padding-top:48px}
+.rm-step .dot{position:absolute;top:16px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:var(--white);border:4px solid var(--accent);z-index:1}
+.rm-step h4{font-size:.88rem;font-weight:700;margin-bottom:4px}
+.rm-step p{font-size:.78rem;color:var(--text-mid);padding:0 4px}
+
+/* ===== TROUBLESHOOT ===== */
+.trouble-item{display:flex;gap:16px;padding:18px 22px;border-radius:var(--radius-sm);background:var(--white);box-shadow:var(--shadow-sm);margin-bottom:12px}
+.trouble-sev{width:10px;border-radius:4px;flex-shrink:0}
+.trouble-sev.low{background:var(--green)}
+.trouble-sev.mid{background:var(--warn)}
+.trouble-sev.high{background:var(--red)}
+.trouble-item h4{font-size:.92rem;font-weight:700;margin-bottom:4px}
+.trouble-item p{font-size:.82rem;color:var(--text-mid);line-height:1.6}
+
+/* ===== FOOTER ===== */
+.site-footer{background:var(--dark);color:rgba(255,255,255,.6);text-align:center;padding:40px 24px;font-size:.85rem}
+.site-footer a{color:var(--accent)}
+.site-footer .logo-f{font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:8px}
+
+/* ===== BACK TO TOP ===== */
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--white);border:none;font-size:1.2rem;cursor:pointer;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;display:flex;align-items:center;justify-content:center}
+.btt.show{opacity:1;pointer-events:auto}
+.btt:hover{transform:scale(1.1)}
+
+/* ===== FADE IN ANIMATION ===== */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .5s ease-out,transform .5s ease-out}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.no-animate .fade-up{opacity:1;transform:none;transition:none}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .card-grid.col3,.card-grid.col4{grid-template-columns:repeat(2,1fr)}
+  .pillar-row{grid-template-columns:1fr}
+  .hub-layout{grid-template-columns:1fr}
+  .hub-center{position:static}
+  .tool-grid{grid-template-columns:repeat(2,1fr)}
+  .compare-wrap{grid-template-columns:1fr;gap:12px}
+  .compare-vs{padding:4px 0;transform:rotate(90deg)}
+  .step-flow{grid-template-columns:repeat(2,1fr)}
+  .roadmap{flex-direction:column;gap:16px}
+  .roadmap::before{top:0;bottom:0;left:28px;right:auto;width:4px;height:auto}
+  .rm-step{padding-top:0;padding-left:56px;text-align:left}
+  .rm-step .dot{top:50%;left:14px;transform:translate(0,-50%)}
+  .section-title{font-size:1.5rem}
+  .hero h1{font-size:2rem}
+}
+@media(max-width:600px){
+  .card-grid.col2,.card-grid.col3,.card-grid.col4{grid-template-columns:1fr}
+  .tool-grid{grid-template-columns:1fr}
+  .step-flow{grid-template-columns:1fr}
+  .formula-bar{flex-direction:column}
+  .sched-formula{flex-direction:column}
+  .hero{padding:56px 0 40px}
+  .hero h1{font-size:1.6rem}
+  section{padding:44px 0}
+  .container{padding:0 16px}
+  .ctx-layer:nth-child(1),.ctx-layer:nth-child(2),.ctx-layer:nth-child(3){width:100%;max-width:100%}
+}
+</style>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+.ic{display:inline-flex;align-items:center;justify-content:center;width:1.1em;height:1.1em;vertical-align:-0.15em;flex-shrink:0}
+.ic svg{width:100%;height:100%;stroke-width:2}
+.ic-lg{width:1.6em;height:1.6em}
+.ic-xl{width:2.2em;height:2.2em;vertical-align:-0.3em}
+.card-icon .ic{width:1.4em;height:1.4em}
+.pillar .icon .ic{width:2.2em;height:2.2em}
+</style>
+</head>
+<body>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero" id="top">
+<div class="container">
+  <h1 class="fade-up">Claude <span class="accent">Cowork</span> 入門ガイド</h1>
+  <p class="subtitle fade-up">Anthropic Academy の公式コース（全10レッスン）を元に、<br>Claude Coworkの全機能を分かりやすくまとめた詳細解説ページです。</p>
+  <div class="hero-badges fade-up">
+    <span><i data-lucide="book-open" class="ic"></i> 全10レッスン</span>
+    <span><i data-lucide="clock" class="ic"></i> 約100分</span>
+    <span><i data-lucide="graduation-cap" class="ic"></i> Anthropic Academy 公式</span>
+    <span><i data-lucide="badge-check" class="ic"></i> 無料受講</span>
+  </div>
+</div>
+</header>
+
+<!-- ============================== TOC BAR ============================== -->
+<nav class="toc-bar" id="tocBar">
+<div class="container">
+  <div class="toc-inner">
+    <a href="#what">Coworkとは</a>
+    <a href="#pillars">3つの柱</a>
+    <a href="#capabilities">機能一覧</a>
+    <a href="#setup">セットアップ</a>
+    <a href="#tools">ツール接続</a>
+    <a href="#taskloop">タスクループ</a>
+    <a href="#prompt">プロンプト術</a>
+    <a href="#context">コンテキスト</a>
+    <a href="#plugins">プラグイン</a>
+    <a href="#schedule">スケジュール</a>
+    <a href="#files">ファイル操作</a>
+    <a href="#research">リサーチ</a>
+    <a href="#safety">安全設計</a>
+    <a href="#trouble">トラブル対応</a>
+    <a href="#roadmap">ロードマップ</a>
+  </div>
+</div>
+</nav>
+
+<!-- ============================== 1. WHAT IS COWORK ============================== -->
+<section id="what">
+<div class="container">
+  <p class="section-label fade-up">Lesson 1</p>
+  <h2 class="section-title fade-up">Coworkとは？</h2>
+  <p class="section-desc fade-up">Claude Codeと同じアーキテクチャ上に構築された、<strong>非技術者のためのエージェント型作業ツール</strong>です。テキストを貼り付けて回答を得る従来のチャットとは根本的に異なります。</p>
+
+  <div class="compare-wrap fade-up">
+    <div class="compare-box left">
+      <h3><i data-lucide="message-circle" class="ic"></i> 従来のチャット</h3>
+      <ul class="compare-list">
+        <li>テキストを入力して回答を得る</li>
+        <li>1回のやり取りで完結</li>
+        <li>外部ツールへの接続なし</li>
+        <li>ファイル操作は不可</li>
+        <li>ユーザーがコピペで橋渡し</li>
+      </ul>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-box right">
+      <h3><i data-lucide="rocket" class="ic"></i> Cowork（エージェント型）</h3>
+      <ul class="compare-list">
+        <li>タスクを委任して成果物を受け取る</li>
+        <li>複数ステップを自律的に実行</li>
+        <li>Gmail・Drive・Slack等と直接接続</li>
+        <li>ファイルの読み書き・作成が可能</li>
+        <li>ツール間を自動的に橋渡し</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 2. THREE PILLARS ============================== -->
+<section id="pillars">
+<div class="container">
+  <p class="section-label fade-up">Lesson 1</p>
+  <h2 class="section-title fade-up">チャットとの違い：3つの柱</h2>
+  <p class="section-desc fade-up">Coworkは <strong>Plan → Execute → Connect</strong> の3ステップで動作します。</p>
+
+  <div class="pillar-row fade-up">
+    <div class="pillar plan">
+      <span class="num">1</span>
+      <div class="icon"><i data-lucide="clipboard-list" class="ic ic-xl"></i></div>
+      <h3>Plan（計画）</h3>
+      <p>タスクを受け取ると、まず実行計画を策定。サブタスクに分解し、不明点があれば質問します。</p>
+    </div>
+    <div class="pillar exec">
+      <span class="num">2</span>
+      <div class="icon"><i data-lucide="zap" class="ic ic-xl"></i></div>
+      <h3>Execute（実行）</h3>
+      <p>ファイル読み書き、コード実行、Web検索など必要なツールを使い、並列処理（Subagent）も活用して実行します。</p>
+    </div>
+    <div class="pillar conn">
+      <span class="num">3</span>
+      <div class="icon"><i data-lucide="link" class="ic ic-xl"></i></div>
+      <h3>Connect（接続）</h3>
+      <p>Gmail・Drive・Slack・Calendarなど、あなたが普段使うツールと直接連携し、成果物を適切な場所に配置します。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 3. CAPABILITIES ============================== -->
+<section id="capabilities">
+<div class="container">
+  <p class="section-label fade-up">Lesson 1</p>
+  <h2 class="section-title fade-up">Coworkの6つのコア機能</h2>
+  <p class="section-desc fade-up">Coworkが実際にできることの全体像です。</p>
+
+  <div class="card-grid col3 fade-up">
+    <div class="card">
+      <div class="card-icon" style="background:var(--green-light);color:var(--green)"><i data-lucide="plug" class="ic ic-lg"></i></div>
+      <h3>Connectors（接続）</h3>
+      <p>メール、Slack、Google Drive、Calendar など既存ツールと接続。データが自動的に流れ込みます。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--light2);color:var(--primary)"><i data-lucide="folder" class="ic ic-lg"></i></div>
+      <h3>File Operations（ファイル操作）</h3>
+      <p>PDF・Excel・PPTXの読み書き、フォルダ整理、ファイル変換などをネイティブ形式で実行します。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--purple-light);color:var(--purple)"><i data-lucide="puzzle" class="ic ic-lg"></i></div>
+      <h3>Plugins（プラグイン）</h3>
+      <p>Skills + Connectors + Subagents をバンドルした拡張パック。職種・ドメイン別に専門知識を追加できます。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--warn-light);color:var(--warn)"><i data-lucide="alarm-clock" class="ic ic-lg"></i></div>
+      <h3>Scheduled Tasks（定期実行）</h3>
+      <p>任意のタスクを自動で定期実行。<code>/schedule</code> コマンドで毎朝のレポート作成なども設定可能です。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(2,195,154,.12);color:var(--accent-dark)"><i data-lucide="bot" class="ic ic-lg"></i></div>
+      <h3>Subagents（並列処理）</h3>
+      <p>独立した部分タスクを複数の子エージェントに分割し、同時並行で処理します。5社分の分析も一度に実行。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:var(--red-light);color:var(--red)"><i data-lucide="monitor" class="ic ic-lg"></i></div>
+      <h3>Local Computation（計算）</h3>
+      <p>Pythonなどのコードをローカル環境で直接実行し、データ分析やグラフ作成を行います。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 4. WHEN TO USE ============================== -->
+<section id="when">
+<div class="container">
+  <p class="section-label fade-up">Lesson 1</p>
+  <h2 class="section-title fade-up">いつCoworkを使うべきか？</h2>
+  <p class="section-desc fade-up">以下の判断フローで、チャットとCoworkを使い分けましょう。</p>
+
+  <div class="card" style="max-width:700px;margin:0 auto;text-align:center;padding:32px" >
+    <p style="font-size:1rem;font-weight:600;margin-bottom:20px;color:var(--primary)">そのタスクは…</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:24px">
+      <span class="tag" style="background:var(--light2);color:var(--primary);font-size:.85rem;padding:8px 16px">ファイルに触る？</span>
+      <span class="tag" style="background:var(--light2);color:var(--primary);font-size:.85rem;padding:8px 16px">接続ツールを使う？</span>
+      <span class="tag" style="background:var(--light2);color:var(--primary);font-size:.85rem;padding:8px 16px">出力ファイルが必要？</span>
+    </div>
+    <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap">
+      <div style="background:var(--green-light);border-radius:var(--radius-sm);padding:16px 28px">
+        <p style="font-weight:700;color:var(--green);margin-bottom:4px">YES → Cowork</p>
+        <p style="font-size:.82rem;color:var(--text-mid)">ファイル操作やツール連携が必要ならCowork</p>
+      </div>
+      <div style="background:var(--light2);border-radius:var(--radius-sm);padding:16px 28px">
+        <p style="font-weight:700;color:var(--text-mid);margin-bottom:4px">NO → チャット</p>
+        <p style="font-size:.82rem;color:var(--text-mid)">テキスト回答だけならチャットで十分</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 5. SETUP ============================== -->
+<section id="setup">
+<div class="container">
+  <p class="section-label fade-up">Lesson 2</p>
+  <h2 class="section-title fade-up">セットアップの全体像</h2>
+  <p class="section-desc fade-up">Coworkを使い始めるための4ステップです。</p>
+
+  <div class="step-flow fade-up">
+    <div class="step-item">
+      <h4>Desktopアプリ取得</h4>
+      <p>claude.ai からClaude Desktopアプリをダウンロード＆インストール</p>
+    </div>
+    <div class="step-item">
+      <h4>有料プランに加入</h4>
+      <p>Pro / Max / Team / Enterprise いずれかのプランが必要</p>
+    </div>
+    <div class="step-item">
+      <h4>Coworkを有効化</h4>
+      <p>設定 → Feature Preview からCoworkをONにする</p>
+    </div>
+    <div class="step-item">
+      <h4>ツールを接続</h4>
+      <p>Settings → Connectors からGmail・Drive等を認証・接続</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 6. TOOLS ============================== -->
+<section id="tools">
+<div class="container">
+  <p class="section-label fade-up">Lesson 2</p>
+  <h2 class="section-title fade-up">接続できるツール一覧</h2>
+  <p class="section-desc fade-up">Coworkはさまざまな外部ツールと直接接続して、シームレスに作業を行います。</p>
+
+  <div class="hub-layout fade-up">
+    <div class="hub-center">
+      <div class="logo">C</div>
+      <h3>Claude Cowork</h3>
+      <p>すべてのツールの中心となるハブ</p>
+    </div>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <h4><i data-lucide="mail" class="ic"></i> Gmail</h4>
+        <p>メール検索・下書き作成</p>
+        <span class="tool-tag" style="background:rgba(2,195,154,.12);color:var(--accent-dark)">コミュニケーション</span>
+      </div>
+      <div class="tool-card" style="border-left-color:var(--accent)">
+        <h4><i data-lucide="message-square" class="ic"></i> Slack</h4>
+        <p>チャンネル閲覧・メッセージ投稿</p>
+        <span class="tool-tag" style="background:rgba(2,195,154,.12);color:var(--accent-dark)">コミュニケーション</span>
+      </div>
+      <div class="tool-card" style="border-left-color:var(--secondary)">
+        <h4><i data-lucide="hard-drive" class="ic"></i> Google Drive</h4>
+        <p>ファイルの読み書き・検索</p>
+        <span class="tool-tag" style="background:rgba(28,114,147,.12);color:var(--secondary)">ファイル管理</span>
+      </div>
+      <div class="tool-card" style="border-left-color:var(--secondary)">
+        <h4><i data-lucide="save" class="ic"></i> ローカルファイル</h4>
+        <p>PDF / Excel / PPT 等</p>
+        <span class="tool-tag" style="background:rgba(28,114,147,.12);color:var(--secondary)">ファイル管理</span>
+      </div>
+      <div class="tool-card" style="border-left-color:var(--warn)">
+        <h4><i data-lucide="calendar" class="ic"></i> Calendar</h4>
+        <p>予定の確認・空き時間調整</p>
+        <span class="tool-tag" style="background:rgba(245,158,11,.12);color:#B45309">スケジュール</span>
+      </div>
+      <div class="tool-card" style="border-left-color:var(--purple)">
+        <h4><i data-lucide="globe" class="ic"></i> Chrome 拡張</h4>
+        <p>Webページ情報の取り込み</p>
+        <span class="tool-tag" style="background:rgba(124,58,237,.12);color:var(--purple)">情報取得</span>
+      </div>
+      <div class="tool-card" style="border-left-color:var(--green)">
+        <h4><i data-lucide="terminal" class="ic"></i> コード実行</h4>
+        <p>Python等を直接実行・分析</p>
+        <span class="tool-tag" style="background:rgba(5,150,105,.12);color:var(--green)">計算・分析</span>
+      </div>
+      <div class="tool-card" style="border-left-color:var(--text-light)">
+        <h4><i data-lucide="wrench" class="ic"></i> その他のアプリ</h4>
+        <p>CRM・社内ツール等</p>
+        <span class="tool-tag" style="background:rgba(148,163,184,.12);color:var(--text-mid)">カスタム接続</span>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:.85rem;color:var(--text-mid);margin-top:20px;font-style:italic">※ 接続は Settings → Connectors から管理。組織管理者が一括設定も可能です。</p>
+</div>
+</section>
+
+<!-- ============================== 7. TASK LOOP ============================== -->
+<section id="taskloop">
+<div class="container">
+  <p class="section-label fade-up">Lesson 3</p>
+  <h2 class="section-title fade-up">タスクループ：基本の4ステップ</h2>
+  <p class="section-desc fade-up">Coworkとの作業は、常にこの4ステップで回ります。</p>
+
+  <div class="step-flow fade-up">
+    <div class="step-item">
+      <h4>Describe<br><small style="color:var(--text-mid);font-weight:400">タスクを説明する</small></h4>
+      <p>何を見て、何を作り、どこに保存するかを伝えます</p>
+    </div>
+    <div class="step-item">
+      <h4>Clarify<br><small style="color:var(--text-mid);font-weight:400">質問に答える</small></h4>
+      <p>Coworkが不明点を質問するので、方針を明確にします</p>
+    </div>
+    <div class="step-item">
+      <h4>Execute<br><small style="color:var(--text-mid);font-weight:400">離席 or 見守る</small></h4>
+      <p>進捗パネルで確認しつつ、Coworkが作業を実行します</p>
+    </div>
+    <div class="step-item">
+      <h4>Review<br><small style="color:var(--text-mid);font-weight:400">成果物を確認</small></h4>
+      <p>完成ファイルをレビューし、修正があればフィードバック</p>
+    </div>
+  </div>
+
+  <!-- Walkthrough -->
+  <div class="card fade-up" style="margin-top:36px;background:var(--dark);color:var(--white);border:none">
+    <h3 style="color:var(--accent);margin-bottom:16px"><i data-lucide="book-open" class="ic"></i> 実践例：散らかったフォルダ → 完成プレゼン</h3>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <span style="background:var(--dark3);padding:10px 18px;border-radius:var(--radius-sm);font-size:.85rem"><i data-lucide="folder-open" class="ic"></i> 散在ファイル</span>
+      <span style="color:var(--accent);font-weight:700">→</span>
+      <span style="background:var(--dark3);padding:10px 18px;border-radius:var(--radius-sm);font-size:.85rem"><i data-lucide="search" class="ic"></i> 内容分析</span>
+      <span style="color:var(--accent);font-weight:700">→</span>
+      <span style="background:var(--dark3);padding:10px 18px;border-radius:var(--radius-sm);font-size:.85rem"><i data-lucide="layout-grid" class="ic"></i> 構成決定</span>
+      <span style="color:var(--accent);font-weight:700">→</span>
+      <span style="background:var(--dark3);padding:10px 18px;border-radius:var(--radius-sm);font-size:.85rem"><i data-lucide="pen-line" class="ic"></i> スライド作成</span>
+      <span style="color:var(--accent);font-weight:700">→</span>
+      <span style="background:var(--accent);color:var(--dark);padding:10px 18px;border-radius:var(--radius-sm);font-size:.85rem;font-weight:700"><i data-lucide="check-circle" class="ic"></i> 完成プレゼン</span>
+    </div>
+    <p style="font-size:.85rem;color:rgba(255,255,255,.6);margin-top:14px">会議メモ・チェックリスト・タイムライン・メールスレッドが散在するフォルダから、リーダーシップ向けプレゼンを自動生成する例です。</p>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 8. PROMPT ============================== -->
+<section id="prompt">
+<div class="container">
+  <p class="section-label fade-up">Lesson 3</p>
+  <h2 class="section-title fade-up">良いプロンプトの3要素</h2>
+  <p class="section-desc fade-up">Coworkへの指示は「何を見るか」「何が欲しいか」「どこに保存するか」の3要素で構成しましょう。</p>
+
+  <div class="formula-bar fade-up">
+    <span class="formula-chip"><i data-lucide="download" class="ic"></i> Input<br><small style="font-weight:400;font-size:.75rem">何を見るか</small></span>
+    <span class="formula-op">+</span>
+    <span class="formula-chip" style="background:var(--secondary)"><i data-lucide="upload" class="ic"></i> Output<br><small style="font-weight:400;font-size:.75rem">何が欲しいか</small></span>
+    <span class="formula-op">+</span>
+    <span class="formula-chip" style="background:var(--accent);color:var(--dark)"><i data-lucide="map-pin" class="ic"></i> Where<br><small style="font-weight:400;font-size:.75rem">どこに保存するか</small></span>
+  </div>
+
+  <div class="fade-up">
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> GOOD</p>
+      <p>「今週決算報告した3社の議事録がフォルダにあります。アナリストレポートも一緒に。3社それぞれの業績サマリーと、共通テーマを比較するスライドを作成して。チームの共有DriveのQ1フォルダに保存してください。」</p>
+    </div>
+    <div class="prompt-ex bad">
+      <p class="label"><i data-lucide="circle-x" class="ic"></i> BAD</p>
+      <p>「決算の資料をまとめて。」</p>
+    </div>
+  </div>
+
+  <!-- Under the hood -->
+  <h3 class="fade-up" style="margin-top:40px;margin-bottom:16px;font-size:1.1rem"><i data-lucide="settings" class="ic"></i> 知っておくと便利な仕組み</h3>
+  <div class="card-grid col2 fade-up">
+    <div class="card">
+      <h3><i data-lucide="bot" class="ic"></i> Subagents（並列処理）</h3>
+      <p>独立した部分が複数ある場合、別々のワークストリームで同時に処理。5社分のレポートを5つ同時に分析できます。</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="bar-chart-3" class="ic"></i> 進捗パネル</h3>
+      <p>サイドバーに進捗がリアルタイム表示。各ステップの完了状況を確認できます。長時間タスクでも安心。</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="refresh-cw" class="ic"></i> 自動リトライ</h3>
+      <p>エラーが発生しても自動で別のアプローチを試みます。接続切れなどの一時的問題にも対応。</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="shield-check" class="ic"></i> 承認ステップ</h3>
+      <p>メール送信やファイル削除など重要な操作は、実行前に必ずユーザーの承認を求めます。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 9. CONTEXT ============================== -->
+<section id="context">
+<div class="container">
+  <p class="section-label fade-up">Lesson 4</p>
+  <h2 class="section-title fade-up">コンテキスト（文脈）の設定</h2>
+  <p class="section-desc fade-up">Coworkはタスクごとに記憶がリセットされます。毎回説明し直さないために「プロジェクト」と「Instructions」を活用しましょう。</p>
+
+  <!-- Hierarchy -->
+  <div class="ctx-layers fade-up">
+    <div class="ctx-layer">
+      <h4 style="color:var(--primary)"><i data-lucide="globe" class="ic"></i> Global Instructions（グローバル指示）</h4>
+      <p>全プロジェクト共通のルール。文体・署名・日付形式など。</p>
+    </div>
+    <div class="ctx-layer">
+      <h4 style="color:var(--secondary)"><i data-lucide="folder" class="ic"></i> Project Instructions（プロジェクト指示）</h4>
+      <p>特定プロジェクト用のルール。関係者・用語・ブランドガイドなど。</p>
+    </div>
+    <div class="ctx-layer">
+      <h4 style="color:var(--accent-dark)"><i data-lucide="file-text" class="ic"></i> Folder / File Context（ファイル文脈）</h4>
+      <p>プロジェクトにアタッチしたフォルダ・ファイルが自動的にコンテキストに。</p>
+    </div>
+  </div>
+
+  <!-- What to write -->
+  <h3 class="fade-up" style="margin-top:40px;margin-bottom:16px;font-size:1.1rem"><i data-lucide="file-edit" class="ic"></i> Instructionsに書くべき4項目</h3>
+  <div class="card-grid col2 fade-up">
+    <div class="card">
+      <h3><i data-lucide="users" class="ic"></i> Who's involved（関係者）</h3>
+      <p>名前・役割・連絡先を書いておくと「Rachelに送って」が通じるようになります。</p>
+      <p style="font-size:.82rem;color:var(--primary);margin-top:8px;font-style:italic">例: Rachel - PM (rachel@example.com)</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="palette" class="ic"></i> How it should look（見た目）</h3>
+      <p>ブランドカラー、フォント、テンプレートなどのデザインルール。</p>
+      <p style="font-size:.82rem;color:var(--primary);margin-top:8px;font-style:italic">例: 見出しはゴシック体、アクセント色 #02C39A</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="ruler" class="ic"></i> Standards（基準）</h3>
+      <p>命名規則、日付形式、ファイル構成ルールなど。</p>
+      <p style="font-size:.82rem;color:var(--primary);margin-top:8px;font-style:italic">例: ファイル名は YYYY-MM-DD_タイトル</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="shield-off" class="ic"></i> Boundaries（制限）</h3>
+      <p>触ってはいけないフォルダ、送信してはいけない宛先、避けるべき操作など。</p>
+      <p style="font-size:.82rem;color:var(--primary);margin-top:8px;font-style:italic">例: /archive/ フォルダは変更禁止</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 10. PLUGINS ============================== -->
+<section id="plugins">
+<div class="container">
+  <p class="section-label fade-up">Lesson 5</p>
+  <h2 class="section-title fade-up">プラグインの構造と導入</h2>
+  <p class="section-desc fade-up">プラグイン = Skills + Connectors + Subagents をまとめたバンドル。職種・ドメイン別に専門知識を追加できます。</p>
+
+  <div class="card-grid col2 fade-up">
+    <div>
+      <h3 style="margin-bottom:12px;font-size:1rem"><i data-lucide="folder-tree" class="ic"></i> プラグインのフォルダ構造</h3>
+      <div class="plugin-tree">sales-plugin/
+├── plugin.json          <span style="color:var(--text-light)">← 設定ファイル</span>
+├── skills/
+│   ├── deal-tracker.md  <span style="color:var(--text-light)">← スキル定義</span>
+│   └── forecast.md
+├── connectors/
+│   └── crm-config.json  <span style="color:var(--text-light)">← 接続設定</span>
+└── subagents/
+    └── research.md      <span style="color:var(--text-light)">← サブエージェント</span></div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:12px;font-size:1rem"><i data-lucide="rocket" class="ic"></i> 導入の3ステップ</h3>
+      <div class="step-flow" style="grid-template-columns:1fr;gap:12px">
+        <div class="step-item" style="text-align:left;padding-left:48px">
+          <h4>Browse（検索）</h4>
+          <p>プラグインライブラリから目的に合うものを検索</p>
+        </div>
+        <div class="step-item" style="text-align:left;padding-left:48px">
+          <h4>Install（インストール）</h4>
+          <p>ワンクリックでプロジェクトに追加</p>
+        </div>
+        <div class="step-item" style="text-align:left;padding-left:48px">
+          <h4>Customize（カスタマイズ）</h4>
+          <p>自分のワークフローに合わせて設定を調整</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="margin-top:36px;margin-bottom:14px;font-size:1rem"><i data-lucide="tag" class="ic"></i> 利用可能なプラグインの例</h3>
+  <div class="card-grid col4 fade-up">
+    <div class="card" style="padding:16px;text-align:center">
+      <div style="font-size:1.6rem;margin-bottom:6px"><i data-lucide="briefcase" class="ic ic-xl"></i></div>
+      <h3 style="font-size:.88rem">Sales</h3>
+      <p style="font-size:.78rem">CRM連携・案件管理</p>
+    </div>
+    <div class="card" style="padding:16px;text-align:center">
+      <div style="font-size:1.6rem;margin-bottom:6px"><i data-lucide="trending-up" class="ic ic-xl"></i></div>
+      <h3 style="font-size:.88rem">Marketing</h3>
+      <p style="font-size:.78rem">コンテンツ作成・分析</p>
+    </div>
+    <div class="card" style="padding:16px;text-align:center">
+      <div style="font-size:1.6rem;margin-bottom:6px"><i data-lucide="users" class="ic ic-xl"></i></div>
+      <h3 style="font-size:.88rem">HR</h3>
+      <p style="font-size:.78rem">採用・オンボーディング</p>
+    </div>
+    <div class="card" style="padding:16px;text-align:center">
+      <div style="font-size:1.6rem;margin-bottom:6px"><i data-lucide="wrench" class="ic ic-xl"></i></div>
+      <h3 style="font-size:.88rem">Engineering</h3>
+      <p style="font-size:.78rem">コードレビュー・ドキュメント</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 11. SCHEDULE ============================== -->
+<section id="schedule">
+<div class="container">
+  <p class="section-label fade-up">Lesson 6</p>
+  <h2 class="section-title fade-up">スケジュールタスク</h2>
+  <p class="section-desc fade-up">Coworkの任意のタスクを自動的に定期実行する機能。<code>/schedule</code> コマンドまたはサイドバーから設定できます。</p>
+
+  <div class="sched-formula fade-up">
+    <span class="sched-chip skill"><i data-lucide="crosshair" class="ic"></i> Skill<br><small style="font-weight:400">何をするか</small></span>
+    <span class="formula-op">+</span>
+    <span class="sched-chip sched"><i data-lucide="clock" class="ic"></i> Schedule<br><small style="font-weight:400">いつ実行するか</small></span>
+    <span class="formula-op">=</span>
+    <span class="sched-chip auto"><i data-lucide="zap" class="ic"></i> Automation<br><small style="font-weight:400">自動化完成</small></span>
+  </div>
+
+  <div class="card-grid col2 fade-up">
+    <div class="card">
+      <h3><i data-lucide="bar-chart-3" class="ic"></i> 使用例：毎朝のダイジェスト</h3>
+      <p>毎朝8時に、メール・Slack・カレンダーの重要事項をまとめたダイジェストを自動生成し、Slackに投稿。</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="clipboard-list" class="ic"></i> 使用例：週次レポート</h3>
+      <p>毎週金曜17時に、プロジェクトフォルダのファイルを分析し、進捗レポートを作成してDriveに保存。</p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="margin-top:32px;margin-bottom:14px;font-size:1rem"><i data-lucide="settings" class="ic"></i> 設定方法</h3>
+  <div class="step-flow fade-up">
+    <div class="step-item">
+      <h4>/schedule 入力</h4>
+      <p>Coworkの会話画面でコマンドを入力</p>
+    </div>
+    <div class="step-item">
+      <h4>タスク内容を記述</h4>
+      <p>実行したいタスクの内容をプロンプトで指定</p>
+    </div>
+    <div class="step-item">
+      <h4>頻度を設定</h4>
+      <p>毎日・毎週・毎月・カスタムの頻度を選択</p>
+    </div>
+    <div class="step-item">
+      <h4>確認＆有効化</h4>
+      <p>内容を確認して有効化。サイドバーで管理</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 12. FILES ============================== -->
+<section id="files">
+<div class="container">
+  <p class="section-label fade-up">Lesson 7</p>
+  <h2 class="section-title fade-up">ファイル・ドキュメントタスク</h2>
+  <p class="section-desc fade-up">Coworkは本物のファイルを生成します。プレゼンのグラフは編集可能な実チャート、出力はネイティブ形式です。</p>
+
+  <!-- Input → Transform → Output -->
+  <div class="card fade-up" style="background:var(--dark);border:none;color:var(--white);text-align:center;padding:32px">
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+      <div style="background:var(--dark3);padding:16px 24px;border-radius:var(--radius-sm)">
+        <p style="font-size:.75rem;color:var(--text-light);margin-bottom:4px">INPUT</p>
+        <p style="font-weight:700"><i data-lucide="file-input" class="ic"></i> 元データ</p>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.6)">PDF・Excel・メモ等</p>
+      </div>
+      <span style="color:var(--accent);font-size:1.5rem;font-weight:700">→</span>
+      <div style="background:var(--dark3);padding:16px 24px;border-radius:var(--radius-sm)">
+        <p style="font-size:.75rem;color:var(--text-light);margin-bottom:4px">TRANSFORM</p>
+        <p style="font-weight:700"><i data-lucide="cog" class="ic"></i> Cowork処理</p>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.6)">分析・整理・変換</p>
+      </div>
+      <span style="color:var(--accent);font-size:1.5rem;font-weight:700">→</span>
+      <div style="background:var(--accent);color:var(--dark);padding:16px 24px;border-radius:var(--radius-sm)">
+        <p style="font-size:.75rem;margin-bottom:4px;opacity:.7">OUTPUT</p>
+        <p style="font-weight:700"><i data-lucide="file-output" class="ic"></i> 成果物</p>
+        <p style="font-size:.78rem">PPTX・XLSX・DOCX等</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-grid col2 fade-up" style="margin-top:24px">
+    <div class="card">
+      <h3><i data-lucide="package" class="ic"></i> 整理する（Organize）</h3>
+      <ul style="font-size:.88rem;color:var(--text-mid);line-height:2;list-style:none">
+        <li><i data-lucide="folder" class="ic"></i> ファイルを種類別に日付付きサブフォルダへ分類</li>
+        <li><i data-lucide="tag" class="ic"></i> ファイル名をルールに従って一括リネーム</li>
+        <li><i data-lucide="copy" class="ic"></i> 重複ファイルの検出と整理</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="sparkles" class="ic"></i> 作成する（Create）</h3>
+      <ul style="font-size:.88rem;color:var(--text-mid);line-height:2;list-style:none">
+        <li><i data-lucide="presentation" class="ic"></i> データからプレゼン資料を自動作成</li>
+        <li><i data-lucide="file-text" class="ic"></i> 議事録からサマリーレポートを生成</li>
+        <li><i data-lucide="trending-up" class="ic"></i> Excelのデータを分析・チャート化</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 13. RESEARCH ============================== -->
+<section id="research">
+<div class="container">
+  <p class="section-label fade-up">Lesson 8</p>
+  <h2 class="section-title fade-up">リサーチ＆大規模分析</h2>
+  <p class="section-desc fade-up">Coworkが特に力を発揮する3つの条件があります。</p>
+
+  <div class="card-grid col3 fade-up">
+    <div class="card" style="border-top:4px solid var(--primary)">
+      <div style="font-size:2rem;font-weight:900;color:var(--primary);margin-bottom:8px">V</div>
+      <h3>Volume（大量）</h3>
+      <p>数十〜数百のファイルを一度に分析。人間なら数日かかる作業を短時間で。</p>
+    </div>
+    <div class="card" style="border-top:4px solid var(--secondary)">
+      <div style="font-size:2rem;font-weight:900;color:var(--secondary);margin-bottom:8px">P</div>
+      <h3>Parallelism（並列）</h3>
+      <p>Subagentで複数ソースを同時に調査。競合5社の分析も並行実行。</p>
+    </div>
+    <div class="card" style="border-top:4px solid var(--accent)">
+      <div style="font-size:2rem;font-weight:900;color:var(--accent-dark);margin-bottom:8px">I</div>
+      <h3>In-place（現地保存）</h3>
+      <p>結果をそのままDriveやSlackに配置。分析→レポート→共有がワンストップ。</p>
+    </div>
+  </div>
+
+  <!-- Prompt framing -->
+  <h3 class="fade-up" style="margin-top:40px;margin-bottom:8px;font-size:1.1rem"><i data-lucide="lightbulb" class="ic"></i> 「まとめて」ではなく「シグナルを聞く」</h3>
+  <p class="fade-up" style="color:var(--text-mid);margin-bottom:20px;font-size:.92rem">最も有用なプロンプトは「全部まとめて」ではなく、自分が1週間かけて答えるような質問です。</p>
+
+  <div class="fade-up">
+    <div class="prompt-ex bad" style="margin-bottom:12px">
+      <p class="label"><i data-lucide="circle-x" class="ic"></i> 避けるべき指示</p>
+      <p>「議事録をまとめて」</p>
+    </div>
+    <div class="prompt-ex good">
+      <p class="label"><i data-lucide="circle-check" class="ic"></i> 効果的な指示</p>
+      <p>「過去3ヶ月の取締役会議事録から、繰り返し議論されているが未解決の課題トップ5を抽出し、各課題について最初に言及された日・関与メンバー・最新ステータスを表にまとめて」</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 14. SAFETY ============================== -->
+<section id="safety">
+<div class="container">
+  <p class="section-label fade-up">Lesson 9</p>
+  <h2 class="section-title fade-up">安全設計と権限管理</h2>
+  <p class="section-desc fade-up">Coworkは4層の安全設計で構築されています。</p>
+
+  <div class="safety-stack fade-up">
+    <div class="safety-row">
+      <span class="safety-num">1</span>
+      <div>
+        <h4>隔離環境（Sandbox）</h4>
+        <p>OS本体とは分離された環境で実行。システムファイルへのアクセスは不可。</p>
+      </div>
+    </div>
+    <div class="safety-row">
+      <span class="safety-num">2</span>
+      <div>
+        <h4>承認ステップ（Approval）</h4>
+        <p>メール送信・ファイル削除・外部送信など重要操作は実行前にユーザー承認が必要。</p>
+      </div>
+    </div>
+    <div class="safety-row">
+      <span class="safety-num">3</span>
+      <div>
+        <h4>権限スコープ（Scope）</h4>
+        <p>接続ツールごとに読み取り/書き込み権限を個別設定。最小権限の原則。</p>
+      </div>
+    </div>
+    <div class="safety-row">
+      <span class="safety-num">4</span>
+      <div>
+        <h4>監査ログ（Audit）</h4>
+        <p>全操作のログが記録され、管理者が確認可能。Enterprise向け詳細監査も対応。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model & Usage -->
+  <h3 class="fade-up" style="margin-top:40px;margin-bottom:16px;font-size:1.1rem"><i data-lucide="gauge" class="ic"></i> 使用量管理とモデル選択</h3>
+  <div class="card-grid col3 fade-up">
+    <div class="card">
+      <h3><i data-lucide="link" class="ic"></i> 関連タスクをまとめる</h3>
+      <p>セッション開始にはオーバーヘッドあり。関連する複数タスクは1セッションで実行すると効率的。</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="scan" class="ic"></i> スコープを明確に</h3>
+      <p>「全ファイル調べて」より「この3ファイルを分析して」の方が消費量を節約できます。</p>
+    </div>
+    <div class="card">
+      <h3><i data-lucide="sliders-horizontal" class="ic"></i> モデルを使い分ける</h3>
+      <p>簡単なタスクには軽量モデル、複雑な分析には高性能モデルを使い分けて最適化。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 15. TROUBLESHOOT ============================== -->
+<section id="trouble">
+<div class="container">
+  <p class="section-label fade-up">Lesson 10</p>
+  <h2 class="section-title fade-up">よくある問題と対処法</h2>
+  <p class="section-desc fade-up">困ったときのトラブルシューティングガイドです。</p>
+
+  <div class="fade-up">
+    <div class="trouble-item">
+      <div class="trouble-sev low"></div>
+      <div>
+        <h4>「ワークスペース準備中」が長い</h4>
+        <p>Coworkが環境を準備中。通常のチャットより時間がかかる場合があります。特に初回や大きなフォルダの場合はそのまま待ちましょう。</p>
+      </div>
+    </div>
+    <div class="trouble-item">
+      <div class="trouble-sev mid"></div>
+      <div>
+        <h4>ツールの接続が切れた</h4>
+        <p>Settings → Connectors から再認証してください。トークンの有効期限切れが原因のことが多いです。</p>
+      </div>
+    </div>
+    <div class="trouble-item">
+      <div class="trouble-sev mid"></div>
+      <div>
+        <h4>出力ファイルの品質が低い</h4>
+        <p>プロンプトにInput / Output / Whereの3要素を含めているか確認。スキルにブランドガイドラインを設定すると品質が安定します。</p>
+      </div>
+    </div>
+    <div class="trouble-item">
+      <div class="trouble-sev high"></div>
+      <div>
+        <h4>使用量の上限に達した</h4>
+        <p>プラン上限に到達すると一時的に利用制限されます。スコープを絞る、タスクをまとめるなどの節約策を検討してください。</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== 16. ROADMAP ============================== -->
+<section id="roadmap">
+<div class="container">
+  <p class="section-label fade-up">Lesson 10</p>
+  <h2 class="section-title fade-up">今すぐ始める5ステップ・ロードマップ</h2>
+  <p class="section-desc fade-up">ゴール：信頼できるスキルがスケジュールで自動実行される状態を目指しましょう。</p>
+
+  <div class="roadmap fade-up">
+    <div class="rm-step">
+      <div class="dot"></div>
+      <h4>プラグインを<br>インストール</h4>
+      <p>自分の職種に合ったプラグインを選んで追加</p>
+    </div>
+    <div class="rm-step">
+      <div class="dot"></div>
+      <h4>小さなタスクで<br>テスト</h4>
+      <p>ファイル整理など低リスクなタスクから始める</p>
+    </div>
+    <div class="rm-step">
+      <div class="dot"></div>
+      <h4>Instructionsを<br>整備</h4>
+      <p>関係者・基準・制限を記述して精度を向上</p>
+    </div>
+    <div class="rm-step">
+      <div class="dot"></div>
+      <h4>スキルを作成</h4>
+      <p>繰り返すタスクをスキルとして定義・保存</p>
+    </div>
+    <div class="rm-step">
+      <div class="dot"></div>
+      <h4>スケジュールで<br>自動化</h4>
+      <p>スキルを定期実行して完全自動化を達成</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================== SUMMARY ============================== -->
+<section style="background:var(--dark);color:var(--white);padding:60px 0">
+<div class="container">
+  <h2 class="fade-up" style="font-size:1.7rem;font-weight:800;margin-bottom:24px;color:var(--white)"><i data-lucide="book-open" class="ic"></i> コースまとめ</h2>
+  <div class="card-grid col2 fade-up" style="margin-bottom:32px">
+    <div class="card" style="background:var(--dark2);border-color:var(--dark3);color:var(--white)">
+      <p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.8">
+        <i data-lucide="check" class="ic" style="color:var(--accent)"></i> Cowork = 委任型AI作業ツール<br>
+        <i data-lucide="check" class="ic" style="color:var(--accent)"></i> Plan → Execute → Connect の3ステップ<br>
+        <i data-lucide="check" class="ic" style="color:var(--accent)"></i> タスクループ：説明→質問→実行→レビュー<br>
+        <i data-lucide="check" class="ic" style="color:var(--accent)"></i> プロジェクト＆Instructionsで文脈を維持
+      </p>
+    </div>
+    <div class="card" style="background:var(--dark2);border-color:var(--dark3);color:var(--white)">
+      <p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.8">
+        <i data-lucide="check" class="ic" style="color:var(--accent)"></i> プラグインで専門性を拡張<br>
+        <i data-lucide="check" class="ic" style="color:var(--accent)"></i> スケジュールで自動化<br>
+        <i data-lucide="check" class="ic" style="color:var(--accent)"></i> 4層の安全設計で安心<br>
+        <i data-lucide="check" class="ic" style="color:var(--accent)"></i> 小さく始めて段階的にスケール
+      </p>
+    </div>
+  </div>
+
+  <h3 class="fade-up" style="font-size:1.1rem;margin-bottom:14px;color:var(--accent)"><i data-lucide="external-link" class="ic"></i> 参考リンク</h3>
+  <div class="fade-up" style="display:flex;flex-wrap:wrap;gap:12px">
+    <a href="https://anthropic.skilljar.com/introduction-to-claude-cowork" target="_blank" style="background:var(--dark3);color:var(--white);padding:10px 20px;border-radius:var(--radius-sm);font-size:.88rem;transition:background .2s"><i data-lucide="book-open" class="ic"></i> Anthropic Academy コース</a>
+    <a href="https://claude.ai" target="_blank" style="background:var(--dark3);color:var(--white);padding:10px 20px;border-radius:var(--radius-sm);font-size:.88rem;transition:background .2s"><i data-lucide="globe" class="ic"></i> Claude.ai</a>
+    <a href="https://www.anthropic.com/learn" target="_blank" style="background:var(--dark3);color:var(--white);padding:10px 20px;border-radius:var(--radius-sm);font-size:.88rem;transition:background .2s"><i data-lucide="book" class="ic"></i> Anthropic Learn</a>
+  </div>
+</div>
+</section>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="site-footer">
+  <p class="logo-f">Claude Cowork Guide</p>
+  <p>Anthropic Academy 公式コースを元に作成された学習用資料です。</p>
+  <p style="margin-top:8px">© 2025 Learning Resource. Powered by <a href="https://claude.ai" target="_blank">Claude</a></p>
+</footer>
+
+<!-- Back to top -->
+<button class="btt" id="btt" onclick="window.scrollTo({top:0})" aria-label="トップに戻る">↑</button>
+
+<!-- ============================== JS ============================== -->
+<script>
+// Sticky TOC shadow
+const toc = document.getElementById('tocBar');
+window.addEventListener('scroll', () => {
+  toc.classList.toggle('scrolled', window.scrollY > 10);
+  document.getElementById('btt').classList.toggle('show', window.scrollY > 400);
+});
+
+// Active TOC link
+const sections = document.querySelectorAll('section[id]');
+const tocLinks = document.querySelectorAll('.toc-inner a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`.toc-inner a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// Fade-up animation with fallback
+const fadeEls = document.querySelectorAll('.fade-up');
+if ('IntersectionObserver' in window) {
+  const fadeObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); fadeObs.unobserve(e.target); } });
+  }, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
+  fadeEls.forEach(el => fadeObs.observe(el));
+  // Fallback: after 2s, make any still-hidden elements visible
+  setTimeout(() => { fadeEls.forEach(el => el.classList.add('visible')); }, 2500);
+} else {
+  fadeEls.forEach(el => el.classList.add('visible'));
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.lucide) lucide.createIcons();
+});
+</script>
+</body>
+</html>
