@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claudeでここまでできる！｜学習資料の自動作成から公開まで</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#0B1929;--dark2:#132A43;--dark3:#1A3550;
+  --primary:#065A82;--secondary:#1C7293;
+  --accent:#02C39A;--accent-dark:#019875;
+  --light:#EFF6FA;--light2:#E3F0F7;--light3:#D1E8F0;
+  --text:#1E293B;--text-mid:#475569;--text-light:#94A3B8;
+  --white:#FFFFFF;
+  --warn:#F59E0B;--warn-light:#FEF3C7;
+  --red:#E11D48;--red-light:#FEE2E2;
+  --green:#059669;--green-light:#D1FAE5;
+  --purple:#7C3AED;--purple-light:#EDE9FE;
+  --blue:#2563EB;--blue-light:#DBEAFE;
+  --radius:14px;--radius-sm:8px;
+  --shadow:0 4px 24px rgba(11,25,41,.10);
+  --shadow-sm:0 2px 8px rgba(11,25,41,.08);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Segoe UI",sans-serif;color:var(--text);background:var(--white);line-height:1.8;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:var(--primary);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent)}
+
+/* ===== UTILITY ===== */
+.container{max-width:960px;margin:0 auto;padding:0 24px}
+.accent{color:var(--accent)}
+.section{padding:64px 0}
+.section:nth-child(even){background:var(--light)}
+.section-label{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px}
+.section-label i{width:14px;height:14px;stroke-width:2.5}
+.section h2{font-size:1.7rem;font-weight:800;color:var(--dark);margin-bottom:8px;line-height:1.4}
+.section .lead{color:var(--text-mid);font-size:1rem;margin-bottom:36px;max-width:700px}
+
+/* ===== HERO ===== */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,var(--primary) 50%,var(--secondary) 100%);color:var(--white);padding:100px 0 72px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:"";position:absolute;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:rgba(2,195,154,.12)}
+.hero::after{content:"";position:absolute;bottom:-60px;left:-40px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero .container{position:relative;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(2,195,154,.2);border:1px solid rgba(2,195,154,.3);padding:6px 18px;border-radius:99px;font-size:.82rem;font-weight:600;margin-bottom:20px;color:var(--accent)}
+.hero-eyebrow i{width:16px;height:16px;stroke-width:2}
+.hero h1{font-size:2.6rem;font-weight:900;margin-bottom:16px;letter-spacing:-.02em;line-height:1.3}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .subtitle{font-size:1.1rem;color:rgba(255,255,255,.75);max-width:620px;margin:0 auto 28px}
+.hero-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat .num{font-size:2rem;font-weight:800;color:var(--accent);display:block;line-height:1.2}
+.hero-stat .label{font-size:.78rem;color:rgba(255,255,255,.6)}
+
+/* ===== OVERVIEW (What was done) ===== */
+.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.overview-card{background:var(--white);border:1px solid var(--light2);border-radius:var(--radius);padding:24px 20px;text-align:center;transition:transform .3s,box-shadow .3s}
+.overview-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.overview-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.overview-icon i{width:24px;height:24px;stroke-width:1.8;color:var(--white)}
+.overview-icon.c1{background:linear-gradient(135deg,var(--primary),var(--secondary))}
+.overview-icon.c2{background:linear-gradient(135deg,var(--accent-dark),var(--accent))}
+.overview-icon.c3{background:linear-gradient(135deg,#6D28D9,#7C3AED)}
+.overview-icon.c4{background:linear-gradient(135deg,#D97706,var(--warn))}
+.overview-card h3{font-size:.92rem;font-weight:700;color:var(--dark);margin-bottom:4px}
+.overview-card p{font-size:.78rem;color:var(--text-mid);line-height:1.5}
+
+/* ===== FLOW (Process Steps) ===== */
+.flow-list{display:flex;flex-direction:column;gap:0;position:relative}
+.flow-list::before{content:"";position:absolute;left:31px;top:40px;bottom:40px;width:3px;background:linear-gradient(to bottom,var(--accent),var(--primary),var(--purple));border-radius:2px}
+.flow-step{display:flex;gap:24px;align-items:flex-start;position:relative;padding:20px 0}
+.flow-num{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:var(--white);flex-shrink:0;position:relative;z-index:2;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.flow-num.s1{background:linear-gradient(135deg,var(--accent-dark),var(--accent))}
+.flow-num.s2{background:linear-gradient(135deg,var(--primary),var(--secondary))}
+.flow-num.s3{background:linear-gradient(135deg,#6D28D9,#7C3AED)}
+.flow-num.s4{background:linear-gradient(135deg,#D97706,var(--warn))}
+.flow-content{flex:1;background:var(--white);border:1px solid var(--light2);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm)}
+.flow-content h3{font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.flow-content h3 i{width:18px;height:18px;stroke-width:2;color:var(--accent)}
+.flow-content .flow-desc{font-size:.9rem;color:var(--text-mid);margin-bottom:12px}
+.flow-detail{background:var(--light);border-radius:var(--radius-sm);padding:16px;font-size:.82rem;color:var(--text)}
+.flow-detail ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.flow-detail li{display:flex;align-items:flex-start;gap:8px}
+.flow-detail li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:8px}
+
+/* ===== TOOL STACK ===== */
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tool-card{background:var(--white);border:1px solid var(--light2);border-radius:var(--radius);padding:20px;display:flex;align-items:flex-start;gap:14px;transition:transform .3s,box-shadow .3s}
+.tool-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.tool-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tool-icon i{width:20px;height:20px;stroke-width:2;color:var(--white)}
+.tool-icon.ti-blue{background:var(--primary)}
+.tool-icon.ti-green{background:var(--accent-dark)}
+.tool-icon.ti-purple{background:var(--purple)}
+.tool-icon.ti-amber{background:#D97706}
+.tool-icon.ti-red{background:var(--red)}
+.tool-icon.ti-dark{background:var(--dark)}
+.tool-info h4{font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:2px}
+.tool-info p{font-size:.76rem;color:var(--text-mid);line-height:1.5}
+
+/* ===== DELIVERABLES ===== */
+.deliverable-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.deliverable-card{background:var(--white);border:1px solid var(--light2);border-radius:var(--radius);overflow:hidden;transition:transform .3s,box-shadow .3s}
+.deliverable-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.deliverable-header{padding:20px 24px 12px;display:flex;align-items:center;gap:12px}
+.deliverable-header .d-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.deliverable-header .d-icon i{width:20px;height:20px;stroke-width:2;color:var(--white)}
+.deliverable-header .d-icon.web{background:linear-gradient(135deg,var(--primary),var(--secondary))}
+.deliverable-header .d-icon.pptx{background:linear-gradient(135deg,#D97706,var(--warn))}
+.deliverable-header h4{font-size:.95rem;font-weight:700;color:var(--dark)}
+.deliverable-header span{font-size:.72rem;color:var(--text-light);display:block}
+.deliverable-body{padding:0 24px 20px}
+.deliverable-body table{width:100%;font-size:.8rem;border-collapse:collapse}
+.deliverable-body td{padding:5px 0;border-bottom:1px solid var(--light2);color:var(--text-mid)}
+.deliverable-body td:first-child{font-weight:600;color:var(--text);width:110px}
+.deliverable-body tr:last-child td{border:none}
+
+/* ===== BEFORE/AFTER ===== */
+.ba-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:stretch}
+.ba-card{border-radius:var(--radius);padding:28px 24px}
+.ba-card.before{background:var(--red-light);border:1px solid #FECACA}
+.ba-card.after{background:var(--green-light);border:1px solid #A7F3D0}
+.ba-card h3{font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ba-card.before h3{color:var(--red)}
+.ba-card.after h3{color:var(--green)}
+.ba-card h3 i{width:20px;height:20px;stroke-width:2.5}
+.ba-card ul{list-style:none;font-size:.88rem;display:flex;flex-direction:column;gap:8px}
+.ba-card li{display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.ba-card.before li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:8px}
+.ba-card.after li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:8px}
+.ba-arrow{display:flex;align-items:center;justify-content:center;color:var(--text-light)}
+.ba-arrow i{width:32px;height:32px;stroke-width:1.5}
+
+/* ===== PROMPT EXAMPLES ===== */
+.prompt-list{display:flex;flex-direction:column;gap:16px}
+.prompt-card{background:var(--white);border:1px solid var(--light2);border-radius:var(--radius);overflow:hidden}
+.prompt-card-header{display:flex;align-items:center;gap:10px;padding:14px 20px;background:var(--dark);color:var(--white);font-size:.82rem;font-weight:600}
+.prompt-card-header i{width:16px;height:16px;stroke-width:2;color:var(--accent)}
+.prompt-card-header .step-badge{background:var(--accent);color:var(--dark);font-size:.68rem;font-weight:800;padding:2px 10px;border-radius:99px;margin-right:4px}
+.prompt-body{padding:16px 20px;font-size:.88rem;line-height:1.7;color:var(--text)}
+.prompt-body code{background:var(--light);padding:2px 8px;border-radius:4px;font-family:"SF Mono","Fira Code",monospace;font-size:.82rem;color:var(--primary)}
+.prompt-result{padding:12px 20px;background:var(--light);border-top:1px solid var(--light2);font-size:.8rem;color:var(--text-mid);display:flex;align-items:center;gap:8px}
+.prompt-result i{width:14px;height:14px;stroke-width:2;color:var(--accent)}
+
+/* ===== KEY POINTS ===== */
+.kp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.kp-card{background:var(--white);border:1px solid var(--light2);border-radius:var(--radius);padding:24px 20px;text-align:center;transition:transform .3s}
+.kp-card:hover{transform:translateY(-3px)}
+.kp-emoji{font-size:2rem;margin-bottom:8px;display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;margin:0 auto 12px}
+.kp-emoji i{width:28px;height:28px;stroke-width:1.8;color:var(--white)}
+.kp-emoji.k1{background:linear-gradient(135deg,var(--accent-dark),var(--accent))}
+.kp-emoji.k2{background:linear-gradient(135deg,var(--primary),var(--secondary))}
+.kp-emoji.k3{background:linear-gradient(135deg,#6D28D9,var(--purple))}
+.kp-card h3{font-size:.95rem;font-weight:700;color:var(--dark);margin-bottom:4px}
+.kp-card p{font-size:.8rem;color:var(--text-mid);line-height:1.5}
+
+/* ===== CTA ===== */
+.cta{background:linear-gradient(135deg,var(--dark) 0%,var(--primary) 100%);color:var(--white);padding:64px 0;text-align:center}
+.cta h2{font-size:1.6rem;font-weight:800;margin-bottom:8px}
+.cta p{color:rgba(255,255,255,.7);margin-bottom:24px;font-size:.95rem}
+.cta-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:99px;font-size:.92rem;font-weight:700;transition:all .2s}
+.cta-btn i{width:18px;height:18px;stroke-width:2}
+.cta-btn.primary{background:var(--accent);color:var(--dark)}
+.cta-btn.primary:hover{background:var(--white);color:var(--dark)}
+.cta-btn.secondary{background:rgba(255,255,255,.12);color:var(--white);border:1px solid rgba(255,255,255,.2)}
+.cta-btn.secondary:hover{background:rgba(255,255,255,.2)}
+
+/* ===== FOOTER ===== */
+.site-footer{background:var(--dark);color:rgba(255,255,255,.5);padding:28px 0;text-align:center;font-size:.78rem}
+.site-footer a{color:var(--accent)}
+
+/* ===== FADE ===== */
+.fade-target{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-target.visible{opacity:1;transform:translateY(0)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .hero h1{font-size:2rem}
+  .overview-grid{grid-template-columns:repeat(2,1fr)}
+  .tool-grid{grid-template-columns:repeat(2,1fr)}
+  .deliverable-grid{grid-template-columns:1fr}
+  .kp-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .hero{padding:64px 0 48px}
+  .hero h1{font-size:1.5rem}
+  .hero-stats{gap:20px}
+  .overview-grid{grid-template-columns:1fr 1fr}
+  .overview-card{padding:16px 14px}
+  .flow-step{gap:14px}
+  .flow-num{width:48px;height:48px;font-size:1rem}
+  .flow-list::before{left:23px}
+  .flow-content{padding:16px}
+  .tool-grid{grid-template-columns:1fr}
+  .ba-wrap{grid-template-columns:1fr;gap:12px}
+  .ba-arrow{transform:rotate(90deg)}
+  .kp-grid{grid-template-columns:1fr}
+  .section{padding:48px 0}
+  .section h2{font-size:1.35rem}
+}
+</style>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-eyebrow"><i data-lucide="sparkles"></i>実践デモ紹介</div>
+    <h1>Claudeで<em>ここまで</em>できる！</h1>
+    <p class="subtitle">Webページのコンテンツ分析から、スライド資料の自動作成、Webサイト構築、GitHub公開まで ─ すべてClaudeとの対話だけで実現しました。</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="num">3</span><span class="label">コース分析</span></div>
+      <div class="hero-stat"><span class="num">6</span><span class="label">成果物作成</span></div>
+      <div class="hero-stat"><span class="num">1</span><span class="label">サイト公開</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== SECTION 1: OVERVIEW ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-label"><i data-lucide="layout-grid"></i>OVERVIEW</div>
+    <h2>今回やったこと</h2>
+    <p class="lead">Claudeに指示するだけで、学習コースの内容分析からWebサイト公開まで一気通貫で実行しました。</p>
+    <div class="overview-grid fade-target">
+      <div class="overview-card">
+        <div class="overview-icon c1"><i data-lucide="scan-search"></i></div>
+        <h3>コンテンツ分析</h3>
+        <p>Webページを自動巡回し、コース内容を抽出・整理</p>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon c4"><i data-lucide="presentation"></i></div>
+        <h3>スライド作成</h3>
+        <p>分析結果をPowerPoint資料に自動変換</p>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon c3"><i data-lucide="code"></i></div>
+        <h3>Webサイト構築</h3>
+        <p>レスポンシブ対応のHTMLページを生成</p>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon c2"><i data-lucide="globe"></i></div>
+        <h3>GitHub公開</h3>
+        <p>GitHubにアップロードしてWebサイトとして公開</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2: WORKFLOW ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-label"><i data-lucide="workflow"></i>WORKFLOW</div>
+    <h2>4ステップの作業フロー</h2>
+    <p class="lead">人間がやったのは「指示を出すこと」だけ。残りはすべてClaudeが自動で実行しました。</p>
+
+    <div class="flow-list fade-target">
+      <!-- Step 1 -->
+      <div class="flow-step">
+        <div class="flow-num s1">1</div>
+        <div class="flow-content">
+          <h3><i data-lucide="scan-search"></i>Webページの分析・コンテンツ抽出</h3>
+          <p class="flow-desc">Anthropic Academyの各コースページにアクセスし、レッスン内容を自動で読み取り・分析しました。</p>
+          <div class="flow-detail">
+            <ul>
+              <li>ブラウザを自動操作してコースページを順番にアクセス</li>
+              <li>各レッスンの学習目標・キーポイント・演習内容を抽出</li>
+              <li>13レッスン分のノートを自動生成（約920行）</li>
+              <li>コース構成を分析し、セクション構造を設計</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="flow-step">
+        <div class="flow-num s2">2</div>
+        <div class="flow-content">
+          <h3><i data-lucide="presentation"></i>PowerPoint資料の自動作成</h3>
+          <p class="flow-desc">分析したコンテンツをもとに、デザイン統一されたスライド資料をプログラムで自動生成しました。</p>
+          <div class="flow-detail">
+            <ul>
+              <li>PptxGenJSライブラリを使ったNode.jsスクリプトを作成</li>
+              <li>統一カラーパレット（Ocean Gradient）でデザイン</li>
+              <li>タイトル・目次・解説・まとめを含む構成</li>
+              <li>3コース合計70枚以上のスライドを生成</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="flow-step">
+        <div class="flow-num s3">3</div>
+        <div class="flow-content">
+          <h3><i data-lucide="code"></i>Webページの構築</h3>
+          <p class="flow-desc">スマホ対応のレスポンシブWebページを、HTML/CSS/JSで一から作成しました。</p>
+          <div class="flow-detail">
+            <ul>
+              <li>フェードインアニメーション付きのモダンなデザイン</li>
+              <li>PC・タブレット・スマホすべてに対応（レスポンシブ）</li>
+              <li>Lucide Iconsを使ったアイコン表示（絵文字不使用）</li>
+              <li>目次ページ含む計4つのHTMLファイルを生成</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="flow-step">
+        <div class="flow-num s4">4</div>
+        <div class="flow-content">
+          <h3><i data-lucide="globe"></i>GitHubへのアップロード・公開</h3>
+          <p class="flow-desc">作成したファイルをGitHubリポジトリにプッシュし、GitHub Pagesでサイトとして公開しました。</p>
+          <div class="flow-detail">
+            <ul>
+              <li>Gitリポジトリの初期化とファイルのコミット</li>
+              <li>GitHubへの自動プッシュ</li>
+              <li>GitHub Pages用のディレクトリ構成に調整</li>
+              <li>公開URLでアクセス可能に</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== SECTION 3: TOOLS USED ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-label"><i data-lucide="wrench"></i>TOOLS</div>
+    <h2>使用したツール・技術</h2>
+    <p class="lead">Claudeが内部で活用した技術スタック。人間側での準備やインストールは不要です。</p>
+
+    <div class="tool-grid fade-target">
+      <div class="tool-card">
+        <div class="tool-icon ti-green"><i data-lucide="bot"></i></div>
+        <div class="tool-info">
+          <h4>Claude（AI）</h4>
+          <p>すべての分析・コード生成・ファイル操作を実行するAIアシスタント</p>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon ti-blue"><i data-lucide="chrome"></i></div>
+        <div class="tool-info">
+          <h4>ブラウザ自動操作</h4>
+          <p>Chrome MCPでWebページを自動巡回しコンテンツを抽出</p>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon ti-purple"><i data-lucide="file-code"></i></div>
+        <div class="tool-info">
+          <h4>HTML / CSS / JavaScript</h4>
+          <p>レスポンシブ対応のWebページをフルスクラッチで生成</p>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon ti-amber"><i data-lucide="presentation"></i></div>
+        <div class="tool-info">
+          <h4>PptxGenJS</h4>
+          <p>Node.jsでPowerPointファイルをプログラム的に生成</p>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon ti-dark"><i data-lucide="git-branch"></i></div>
+        <div class="tool-info">
+          <h4>Git / GitHub</h4>
+          <p>バージョン管理とGitHub Pagesでのサイト公開</p>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon ti-red"><i data-lucide="palette"></i></div>
+        <div class="tool-info">
+          <h4>Lucide Icons</h4>
+          <p>統一デザインのSVGアイコンライブラリ</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 4: DELIVERABLES ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-label"><i data-lucide="package"></i>DELIVERABLES</div>
+    <h2>作成した成果物</h2>
+    <p class="lead">3コース × 2形式 ＋ 目次ページ = 合計7ファイルを作成しました。</p>
+
+    <div class="deliverable-grid fade-target">
+      <div class="deliverable-card">
+        <div class="deliverable-header">
+          <div class="d-icon web"><i data-lucide="globe"></i></div>
+          <div><h4>Webページ（HTML）</h4><span>レスポンシブ対応・アニメーション付き</span></div>
+        </div>
+        <div class="deliverable-body">
+          <table>
+            <tr><td>AI Fluency</td><td>ai-fluency-guide.html（53KB）</td></tr>
+            <tr><td>Claudeとの協働</td><td>cowork-guide.html（58KB）</td></tr>
+            <tr><td>Claude Code</td><td>claude-code-guide.html（61KB）</td></tr>
+            <tr><td>目次ページ</td><td>index.html</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="deliverable-card">
+        <div class="deliverable-header">
+          <div class="d-icon pptx"><i data-lucide="presentation"></i></div>
+          <div><h4>PowerPoint（PPTX）</h4><span>統一デザイン・印刷対応</span></div>
+        </div>
+        <div class="deliverable-body">
+          <table>
+            <tr><td>AI Fluency</td><td>18スライド（508KB）</td></tr>
+            <tr><td>Claudeとの協働</td><td>27スライド</td></tr>
+            <tr><td>Claude Code</td><td>25スライド（633KB）</td></tr>
+            <tr><td>合計</td><td>70スライド</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 5: BEFORE/AFTER ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-label"><i data-lucide="arrow-right-left"></i>COMPARISON</div>
+    <h2>従来の方法 vs Claude活用</h2>
+    <p class="lead">同じ成果物を作るのに必要な時間と労力を比較します。</p>
+
+    <div class="ba-wrap fade-target">
+      <div class="ba-card before">
+        <h3><i data-lucide="clock"></i>従来の方法</h3>
+        <ul>
+          <li>コースを受講してノートを取る（数時間）</li>
+          <li>内容を整理して構成を考える（1〜2時間）</li>
+          <li>PowerPointを手作業で作成（3〜5時間/コース）</li>
+          <li>Webページをコーディング（5〜8時間/ページ）</li>
+          <li>GitHubの操作を調べて公開（1〜2時間）</li>
+          <li>合計：数日〜1週間以上</li>
+        </ul>
+      </div>
+      <div class="ba-arrow"><i data-lucide="arrow-right"></i></div>
+      <div class="ba-card after">
+        <h3><i data-lucide="zap"></i>Claude活用</h3>
+        <ul>
+          <li>「この内容を資料にまとめて」と指示</li>
+          <li>コンテンツ分析〜資料作成まで自動</li>
+          <li>3コース分のPPTX自動生成</li>
+          <li>レスポンシブWebページも自動生成</li>
+          <li>「GitHubにアップして」で公開完了</li>
+          <li>合計：1回の会話セッション</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 6: ACTUAL PROMPTS ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-label"><i data-lucide="message-circle"></i>PROMPTS</div>
+    <h2>実際に使った指示（プロンプト）</h2>
+    <p class="lead">特別な技術知識は不要。自然な日本語で指示するだけです。</p>
+
+    <div class="prompt-list fade-target">
+      <div class="prompt-card">
+        <div class="prompt-card-header"><span class="step-badge">STEP 1</span><i data-lucide="scan-search"></i>コンテンツ分析</div>
+        <div class="prompt-body">「次はClaudeCodeの内容を初心者向けに資料に詳細にまとめてください」＋ コースURL</div>
+        <div class="prompt-result"><i data-lucide="check-circle"></i>13レッスン分のコンテンツを自動抽出・分析</div>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-card-header"><span class="step-badge">STEP 2</span><i data-lucide="presentation"></i>スライド作成</div>
+        <div class="prompt-body">「PowerPoint資料も作成して」</div>
+        <div class="prompt-result"><i data-lucide="check-circle"></i>18〜27枚のスライドを含むPPTXファイルを自動生成</div>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-card-header"><span class="step-badge">STEP 3</span><i data-lucide="globe"></i>GitHub公開</div>
+        <div class="prompt-body">「GitHubにhtmlデータをアップロードしたいです」＋ リポジトリ名</div>
+        <div class="prompt-result"><i data-lucide="check-circle"></i>目次ページ作成 → git push → GitHub Pages公開</div>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-card-header"><span class="step-badge">STEP 4</span><i data-lucide="sparkles"></i>この紹介ページ</div>
+        <div class="prompt-body">「今回やった内容を他の方に共有したい」「Claude初心者向けにこんなことが出来るんだよと説明する分かりやすい資料を作成してください」</div>
+        <div class="prompt-result"><i data-lucide="check-circle"></i>このページ自体もClaudeが作成しました</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 7: KEY POINTS ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-label"><i data-lucide="lightbulb"></i>KEY POINTS</div>
+    <h2>Claudeを活用するポイント</h2>
+    <p class="lead">AIを最大限活用するためのヒントをまとめました。</p>
+
+    <div class="kp-grid fade-target">
+      <div class="kp-card">
+        <div class="kp-emoji k1"><i data-lucide="message-circle"></i></div>
+        <h3>自然な日本語でOK</h3>
+        <p>プログラミング知識不要。「〜を作って」「〜にアップして」で伝わります</p>
+      </div>
+      <div class="kp-card">
+        <div class="kp-emoji k2"><i data-lucide="layers"></i></div>
+        <h3>段階的に依頼する</h3>
+        <p>一度に全部ではなく、分析→資料→公開と段階的に進めると精度が上がります</p>
+      </div>
+      <div class="kp-card">
+        <div class="kp-emoji k3"><i data-lucide="eye"></i></div>
+        <h3>結果を確認して修正</h3>
+        <p>出力を確認しながら「ここを直して」と調整。対話的に品質を高められます</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta">
+  <div class="container">
+    <h2>学習ガイドを見てみよう</h2>
+    <p>Claudeが作成した学習資料はすべて公開中です</p>
+    <div class="cta-buttons">
+      <a href="index.html" class="cta-btn primary"><i data-lucide="book-open"></i>学習ガイド一覧</a>
+      <a href="https://github.com/Daisuke000017/claude-learning" target="_blank" class="cta-btn secondary"><i data-lucide="github"></i>GitHubリポジトリ</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="container">
+    <p>このページ自体もClaudeが作成しました ─ <a href="https://claude.ai" target="_blank">claude.ai</a></p>
+  </div>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+lucide.createIcons();
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.05 });
+document.querySelectorAll('.fade-target').forEach(el => observer.observe(el));
+setTimeout(() => document.querySelectorAll('.fade-target').forEach(el => el.classList.add('visible')), 1500);
+</script>
+</body>
+</html>
